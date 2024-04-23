@@ -10,7 +10,7 @@ all: ./serenade$(SUFFIX)
 ./serenade$(SUFFIX): $(SERENADE_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $(SERENADE_OBJS) $(LIBS)
 
-.c.o:
+.c.o: ../config.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:

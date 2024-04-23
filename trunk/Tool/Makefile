@@ -10,7 +10,7 @@ all: ./configgen
 ./configgen: $(CONFIGGEN_OBJS)
 	cc -o $@ $(CONFIGGEN_OBJS)
 
-.c.o: ../config.h
+.c.o:
 	cc -c -o $@ $<
 
 clean:

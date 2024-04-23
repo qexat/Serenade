@@ -1,7 +1,7 @@
 /* $Id$ */
 /* --- START LICENSE --- */
 /* -------------------------------------------------------------------------- */
-/*                                                              Lisp Dialect  */
+/*                                                Serenade is a Lisp Dialect  */
 /* -------------------------------------------------------------------------- */
 /* Copyright (c) 2024 Nishi.                                                  */
 /* Redistribution and use in source and binary forms, with or without modific */
