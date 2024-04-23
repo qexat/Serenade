@@ -8,7 +8,7 @@ SUFFIX =
 
 .include "platform.mk"
 
-.PHONY: all ./Serenade
+.PHONY: all ./Serenade ./Tool replace
 
 all: ./Tool ./Serenade
 
@@ -21,3 +21,13 @@ all: ./Tool ./Serenade
 clean:
 	$(MAKE) -C ./Tool clean
 	$(MAKE) -C ./Serenade clean
+
+FILES = `find . -name "*.c" -or -name "*.h"`
+
+replace:
+	for i in $(FILES); do \
+		echo -n "$$i ... "; \
+		perl replace.pl < $$i > $$i.new; \
+		mv $$i.new $$i; \
+		echo "done"; \
+	done
