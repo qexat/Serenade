@@ -28,44 +28,14 @@
 /* -------------------------------------------------------------------------- */
 /* --- END LICENSE --- */
 
-#include "run.h"
-#include "util.h"
+#ifndef __SERENADE_INTERPRETER_H__
+#define __SERENADE_INTERPRETER_H__
 
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "parser.h"
 
-struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
-	if(gen->type == SN_TYPE_TREE) {
-		struct sn_generic* op = gen->tree->args[0];
-		if(op->type == SN_TYPE_TREE) {
-			op = _sn_run(sn, op);
-		}
-		int j;
-		for(j = 1; gen->tree->args[j]; j++)
-			;
-		struct sn_generic** args = malloc(sizeof(struct sn_generic*) * (j - 1));
-		int argc = j - 1;
-		for(j = 1; gen->tree->args[j]; j++) {
-			args[j - 1] = _sn_run(sn, gen->tree->args[j]);
-		}
+struct sn_interpreter {};
 
-		struct sn_generic* r = malloc(sizeof(struct sn_generic));
-		r->type = SN_TYPE_VOID;
+struct sn_interpreter* sn_create_interpreter(void);
+void sn_interpreter_free(struct sn_interpreter* sn);
 
-		if(op->type != SN_TYPE_FUNCTION) {
-			fprintf(stderr, "Cannot call non-function (%d)\n", op->type);
-			free(args);
-			return NULL;
-		} else {
-		}
-		free(args);
-		return r;
-	} else {
-		return gen;
-	}
-	return NULL;
-}
-
-int sn_run(struct sn_interpreter* sn, struct sn_generic* gen) { _sn_run(sn, gen); }
+#endif

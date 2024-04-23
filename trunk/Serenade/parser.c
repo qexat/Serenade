@@ -69,9 +69,11 @@ void push_stack_generic(struct sn_generic* gen, struct sn_generic* pushthis) {
 void push_stack(struct sn_generic* gen, char* buf, int mode) {
 	struct sn_generic* newgen = malloc(sizeof(struct sn_generic));
 	newgen->type = mode;
-	if(mode == SN_TYPE_STRING || mode == SN_TYPE_FUNCTION) {
+	if(mode == SN_TYPE_STRING) {
 		newgen->string = sn_strdup(buf);
 		newgen->string_length = strlen(buf);
+	} else if(mode == SN_TYPE_FUNCTION) {
+		newgen->name = sn_strdup(buf);
 	} else if(mode == SN_TYPE_DOUBLE) {
 		newgen->number = atof(buf);
 	}
@@ -163,6 +165,8 @@ struct sn_generic** sn_parse(char* data, unsigned long long size) {
 	int i;
 	int start = 0;
 	bool dq = false;
+	struct sn_generic** gens = malloc(sizeof(struct sn_generic*));
+	gens[0] = NULL;
 	for(i = 0; i < size; i++) {
 		char c = data[i];
 		if(c == '"') {
@@ -180,14 +184,24 @@ struct sn_generic** sn_parse(char* data, unsigned long long size) {
 				memcpy(d, data + start, i - start + 1);
 				struct sn_generic* gen = sn_expr_parse(d, i - start + 1);
 				if(gen != NULL) {
-					sn_print_generic(gen);
-					sn_generic_free(gen);
+					int j;
+					struct sn_generic** old_gens = gens;
+					for(j = 0; old_gens[j] != NULL; j++)
+						;
+					gens = malloc(sizeof(struct sn_generic*) * (j + 2));
+					for(j = 0; old_gens[j] != NULL; j++) {
+						gens[j] = old_gens[j];
+					}
+					gens[j] = gen;
+					gens[j + 1] = NULL;
 				}
 				free(d);
+			} else if(br < 0) {
+				return gens;
 			}
 		}
 	}
-	return NULL;
+	return gens;
 }
 
 void sn_generic_free(struct sn_generic* g) {

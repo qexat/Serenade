@@ -31,8 +31,9 @@
 #ifndef __SERENADE_RUN_H__
 #define __SERENADE_RUN_H__
 
+#include "interpreter.h"
 #include "parser.h"
 
-int sn_run(struct sn_generic* gen);
+int sn_run(struct sn_interpreter* sn, struct sn_generic* gen);
 
 #endif

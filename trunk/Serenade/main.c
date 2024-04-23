@@ -29,8 +29,11 @@
 /* --- END LICENSE --- */
 
 #include "../config.h"
+#include "interpreter.h"
 #include "parser.h"
+#include "run.h"
 #include "serenade.h"
+#include "util.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -68,9 +71,12 @@ int main(int argc, char** argv) {
 				struct sn_generic** t = sn_parse(str, s.st_size);
 				if(t != NULL) {
 					int j;
+					struct sn_interpreter* sn = sn_create_interpreter();
 					for(j = 0; t[j] != NULL; j++) {
+						sn_run(sn, t[j]);
 						sn_generic_free(t[j]);
 					}
+					sn_interpreter_free(sn);
 					free(t);
 				}
 				free(str);
