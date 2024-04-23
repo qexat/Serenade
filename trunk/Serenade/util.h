@@ -31,7 +31,10 @@
 #ifndef __SERENADE_UTIL_H__
 #define __SERENADE_UTIL_H__
 
+#include "parser.h"
+
 char* sn_strcat(const char* str1, const char* str2);
 char* sn_strdup(const char* str1);
+void sn_print_generic(struct sn_generic* gen);
 
 #endif

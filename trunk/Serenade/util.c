@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 char* sn_strcat(const char* str1, const char* str2){
 	char* str = malloc(strlen(str1) + strlen(str2) + 1);
@@ -46,4 +47,21 @@ char* sn_strdup(const char* str1){
 	memcpy(str, str1, strlen(str1));
 	str[strlen(str1)] = 0;
 	return str;
+}
+
+void _sn_print_generic(struct sn_generic* gen, int n){
+	int i;
+	for(i = 0; i < n; i++) fprintf(stderr, "    ");
+	if(gen->type == SN_TYPE_TREE){
+		fprintf(stderr, "%s\n", gen->tree->op->name);
+		if(gen->tree->args != NULL){
+			for(i = 0; gen->tree->args[i] != NULL; i++){
+				_sn_print_generic(gen->tree->args[i], n + 1);
+			}
+		}
+	}
+}
+
+void sn_print_generic(struct sn_generic* gen){
+	_sn_print_generic(gen, 0);
 }

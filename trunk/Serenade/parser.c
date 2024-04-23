@@ -77,7 +77,7 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size){
 			op_stack[br - 1] = malloc(1);
 			op_stack[br - 1][0] = 0;
 		}else if(c == ')'){
-			if(br == 1){
+			if(br > 0){
 				gn_stack[br - 1]->tree->op->name = sn_strdup(op_stack[br - 1]);
 			}
 			br_stack[br - 1] = 0;
@@ -104,6 +104,7 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size){
 				char* tmp = op_stack[br - 1];
 				op_stack[br - 1] = sn_strcat(tmp, cbuf);
 				free(tmp);
+			}else if(br_stack[br - 1] > 0){
 			}
 		}
 	}
@@ -136,6 +137,7 @@ struct sn_generic** sn_parse(char* data, unsigned long long size){
 				memcpy(d, data + start, i - start + 1);
 				struct sn_generic* gen = sn_expr_parse(d, i - start + 1);
 				if(gen != NULL){
+					sn_print_generic(gen);
 					sn_generic_free(gen);
 				}
 				free(d);
