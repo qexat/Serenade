@@ -28,4 +28,30 @@
 /* -------------------------------------------------------------------------- */
 /* --- END LICENSE --- */
 
-int main(){}
+#include "serenade.h"
+
+#include <string.h>
+#include <stdbool.h>
+#include <stdio.h>
+
+int main(int argc, char** argv){
+	int i;
+	bool loaded = false;
+	for(i = 1; i < argc; i++){
+		if(argv[i][0] == '-'){
+			if(strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-V") == 0){
+				printf("Serenade LISP %s\n", SERENADE_VERSION);
+				return 1;
+			}else{
+				fprintf(stderr, "%s: %s: invalid option\n", argv[0], argv[i]);
+				return 1;
+			}
+		}else{
+			/* file input */
+			loaded = true;
+		}
+	}
+	if(!loaded){
+		printf("Welcome to Serenade LISP %s\n", SERENADE_VERSION);
+	}
+}
