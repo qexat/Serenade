@@ -35,6 +35,8 @@ enum types {
 	SN_TYPE_DOUBLE,
 	SN_TYPE_STRING,
 	SN_TYPE_TREE,
+	SN_TYPE_PTR,
+	SN_TYPE_FUNCTION,
 	SN_TYPE_VOID
 };
 
@@ -42,12 +44,19 @@ struct sn_generic {
 	int type;
 	double number;
 	char* string;
+	unsigned long long string_length;
+	void* ptr;
+	char* name;
 	struct sn_tree* tree;
 };
 
 struct sn_tree {
-	struct sn_generic* type;
+	struct sn_generic* op;
 	struct sn_generic** args;
 };
+
+struct sn_generic** sn_parse(char* data, unsigned long long size);
+void sn_generic_free(struct sn_generic* g);
+void sn_tree_free(struct sn_tree* t);
 
 #endif

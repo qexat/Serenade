@@ -89,6 +89,11 @@ int main(int argc, char** argv){
 			nl = true;
 		}
 	}
+	int stack_size = 1024;
+	fprintf(stderr, "[recommended: 1024] Stack size? ");
+	fflush(stderr);
+	scanf("%d", &stack_size);
+	fprintf(out, "#define STACK_SIZE %d\n", stack_size);
 	fprintf(out, "#define SUPPORT \"");
 	for(n = 0; asks[n * 4] != NULL; n++){
 		if(n > 0) fprintf(out, " ");

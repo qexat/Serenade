@@ -29,11 +29,14 @@
 /* --- END LICENSE --- */
 
 #include "serenade.h"
+#include "parser.h"
 #include "../config.h"
 
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
 
 int main(int argc, char** argv){
 	int i;
@@ -43,6 +46,7 @@ int main(int argc, char** argv){
 			if(strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-V") == 0){
 				printf("Serenade LISP %s\n", SERENADE_VERSION);
 				printf("Support: %s\n", SUPPORT);
+				printf("Stack size: %d\n", STACK_SIZE);
 				return 1;
 			}else{
 				fprintf(stderr, "%s: %s: invalid option\n", argv[0], argv[i]);
@@ -51,12 +55,36 @@ int main(int argc, char** argv){
 		}else{
 			/* file input */
 			loaded = true;
+			struct stat s;
+			if(stat(argv[i], &s) == 0){
+				char* str = malloc(s.st_size);
+				FILE* f = fopen(argv[i], "rb");
+				if(f == NULL){
+					fprintf(stderr, "%s: %s: fopen fail\n", argv[0], argv[i]);
+					free(str);
+					return 1;
+				}
+				fread(str, 1, s.st_size, f);
+				struct sn_generic** t = sn_parse(str, s.st_size);
+				if(t != NULL){
+					int j;
+					for(j = 0; t[j] != NULL; j++){
+						sn_generic_free(t[j]);
+					}
+					free(t);
+				}
+				free(str);
+			}else{
+				fprintf(stderr, "%s: %s: stat fail\n", argv[0], argv[i]);
+				return 1;
+			}
 		}
 	}
 #ifdef HAS_REPL_SUPPORT
 	if(!loaded){
 		printf("Welcome to Serenade LISP %s\n", SERENADE_VERSION);
 		printf("Support: %s\n", SUPPORT);
+		printf("Stack size: %d\n", STACK_SIZE);
 	}
 	return 0;
 #else
