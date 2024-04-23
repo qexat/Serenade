@@ -10,10 +10,13 @@ SUFFIX =
 
 .PHONY: all ./Serenade ./Tool replace
 
-all: ./Tool ./Serenade
+all: ./Tool ./config.h ./Serenade
 
 ./Tool::
 	$(MAKE) -C ./Tool CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)"
+
+./config.h:
+	./Tool/configgen $@
 
 ./Serenade::
 	$(MAKE) -C ./Serenade CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)"
@@ -21,6 +24,7 @@ all: ./Tool ./Serenade
 clean:
 	$(MAKE) -C ./Tool clean
 	$(MAKE) -C ./Serenade clean
+	rm -f config.h
 
 FILES = `find . -name "*.c" -or -name "*.h"`
 
