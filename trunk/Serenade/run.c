@@ -44,12 +44,12 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 			op = _sn_run(sn, op);
 		}
 		int j;
-		for(j = 1; gen->tree->args[j]; j++)
+		for(j = 0; gen->tree->args[j]; j++)
 			;
-		struct sn_generic** args = malloc(sizeof(struct sn_generic*) * (j - 1));
-		int argc = j - 1;
-		for(j = 1; gen->tree->args[j]; j++) {
-			args[j - 1] = _sn_run(sn, gen->tree->args[j]);
+		struct sn_generic** args = malloc(sizeof(struct sn_generic*) * (j));
+		int argc = j;
+		for(j = 0; gen->tree->args[j]; j++) {
+			args[j] = _sn_run(sn, gen->tree->args[j]);
 		}
 
 		struct sn_generic* r = malloc(sizeof(struct sn_generic));
@@ -60,6 +60,26 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 			free(args);
 			return NULL;
 		} else {
+			for(j = 0; sn->variables[j] != NULL; j++) {
+				if(strcmp(sn->variables[j]->key, op->name) == 0) {
+					struct sn_generic* op_result = NULL;
+					if(sn->variables[j]->handler != NULL) {
+						op_result = sn->variables[j]->handler(sn, argc, args);
+					} else {
+						struct sn_generic* build = malloc(sizeof(struct sn_generic));
+						build->tree = malloc(sizeof(struct sn_tree));
+						build->tree->args = args;
+						build->tree->args[0] = sn->variables[j]->value;
+						op_result = _sn_run(sn, build);
+						free(build->tree);
+					}
+					if(op_result != NULL) {
+						free(r);
+						r = op_result;
+					}
+					break;
+				}
+			}
 		}
 		free(args);
 		return r;

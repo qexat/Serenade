@@ -33,12 +33,58 @@
 #include "util.h"
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 struct sn_generic* math_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
 	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
-	gen->type = SN_TYPE_VOID;
+	gen->type = SN_TYPE_DOUBLE;
+	gen->number = 0;
+	if(strcmp(gens[0]->name, "*") == 0) gen->number = 1;
+	int i;
+	for(i = 1; i < args; i++) {
+		if(gens[i]->type == SN_TYPE_DOUBLE) {
+			if(strcmp(gens[0]->name, "*") == 0) {
+				gen->number *= gens[i]->number;
+			} else if(strcmp(gens[0]->name, "+") == 0) {
+				gen->number += gens[i]->number;
+			} else if(strcmp(gens[0]->name, "-") == 0) {
+				if(i == 1) {
+					gen->number += gens[i]->number;
+				} else {
+					gen->number -= gens[i]->number;
+				}
+			} else if(strcmp(gens[0]->name, "/") == 0) {
+				if(i == 1) {
+					gen->number += gens[i]->number;
+				} else {
+					gen->number /= gens[i]->number;
+				}
+			}
+		}
+	}
+	return gen;
+}
+
+struct sn_generic* print_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	int i;
+	for(i = 1; i < args; i++) {
+		if(i > 1) printf(" ");
+		fflush(stdout);
+		if(gens[i]->type == SN_TYPE_DOUBLE) {
+			printf("%f", gens[i]->number);
+		} else if(gens[i]->type == SN_TYPE_STRING) {
+			fwrite(gens[i]->string, 1, gens[i]->string_length, stdout);
+		} else if(gens[i]->type == SN_TYPE_VOID) {
+			printf("<void>");
+		}
+		fflush(stdout);
+	}
+	printf("\n");
+	gen->type = SN_TYPE_FUNCTION;
+	gen->name = sn_strdup("print");
 	return gen;
 }
 
@@ -51,6 +97,7 @@ struct sn_interpreter* sn_create_interpreter(void) {
 	sn_set_handler(sn, "-", math_handler);
 	sn_set_handler(sn, "*", math_handler);
 	sn_set_handler(sn, "/", math_handler);
+	sn_set_handler(sn, "print", print_handler);
 
 	return sn;
 }
