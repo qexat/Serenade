@@ -30,11 +30,92 @@
 
 #include "interpreter.h"
 
+#include "util.h"
+
+#include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
+
+struct sn_generic* math_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	gen->type = SN_TYPE_VOID;
+	return gen;
+}
 
 struct sn_interpreter* sn_create_interpreter(void) {
 	struct sn_interpreter* sn = malloc(sizeof(struct sn_interpreter));
+	sn->variables = malloc(sizeof(struct sn_interpreter_kv*));
+	sn->variables[0] = NULL;
+
+	sn_set_handler(sn, "+", math_handler);
+	sn_set_handler(sn, "-", math_handler);
+	sn_set_handler(sn, "*", math_handler);
+	sn_set_handler(sn, "/", math_handler);
+
 	return sn;
 }
 
-void sn_interpreter_free(struct sn_interpreter* sn) { free(sn); }
+void sn_interpreter_free(struct sn_interpreter* sn) {
+	int i;
+	for(i = 0; sn->variables[i] != NULL; i++) {
+		free(sn->variables[i]->key);
+		if(sn->variables[i]->value != NULL) sn_generic_free(sn->variables[i]->value);
+		free(sn->variables[i]);
+	}
+	free(sn->variables);
+	free(sn);
+}
+
+void sn_set_variable(struct sn_interpreter* sn, const char* name, struct sn_generic* gen) {
+	int i;
+	bool replaced = false;
+	for(i = 0; sn->variables[i] != NULL; i++) {
+		if(strcmp(sn->variables[i]->key, name) == 0) {
+			sn_generic_free(sn->variables[i]->value);
+			sn->variables[i]->value = gen;
+			replaced = true;
+			break;
+		}
+	}
+	if(!replaced) {
+		struct sn_interpreter_kv** oldvariables = sn->variables;
+		for(i = 0; oldvariables[i] != NULL; i++)
+			;
+		sn->variables = malloc(sizeof(struct sn_interpreter_kv*) * (i + 2));
+		for(i = 0; oldvariables[i] != NULL; i++) {
+			sn->variables[i] = oldvariables[i];
+		}
+		sn->variables[i] = malloc(sizeof(struct sn_generic));
+		sn->variables[i]->key = sn_strdup(name);
+		sn->variables[i]->value = gen;
+		sn->variables[i]->handler = NULL;
+		sn->variables[i + 1] = NULL;
+	}
+}
+
+void sn_set_handler(struct sn_interpreter* sn, const char* name, struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**)) {
+	int i;
+	bool replaced = false;
+	for(i = 0; sn->variables[i] != NULL; i++) {
+		if(strcmp(sn->variables[i]->key, name) == 0) {
+			sn_generic_free(sn->variables[i]->value);
+			sn->variables[i]->handler = handler;
+			replaced = true;
+			break;
+		}
+	}
+	if(!replaced) {
+		struct sn_interpreter_kv** oldvariables = sn->variables;
+		for(i = 0; oldvariables[i] != NULL; i++)
+			;
+		sn->variables = malloc(sizeof(struct sn_interpreter_kv*) * (i + 2));
+		for(i = 0; oldvariables[i] != NULL; i++) {
+			sn->variables[i] = oldvariables[i];
+		}
+		sn->variables[i] = malloc(sizeof(struct sn_generic));
+		sn->variables[i]->key = sn_strdup(name);
+		sn->variables[i]->value = NULL;
+		sn->variables[i]->handler = handler;
+		sn->variables[i + 1] = NULL;
+	}
+}
