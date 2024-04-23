@@ -1,6 +1,6 @@
 # $Id$
 
-SERENADE_OBJS = main.o
+SERENADE_OBJS = main.o parser.o
 
 .PHONY: all clean
 .SUFFIXES: .o .c

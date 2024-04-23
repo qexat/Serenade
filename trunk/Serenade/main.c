@@ -29,6 +29,7 @@
 /* --- END LICENSE --- */
 
 #include "serenade.h"
+#include "../config.h"
 
 #include <string.h>
 #include <stdbool.h>
@@ -41,6 +42,7 @@ int main(int argc, char** argv){
 		if(argv[i][0] == '-'){
 			if(strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-V") == 0){
 				printf("Serenade LISP %s\n", SERENADE_VERSION);
+				printf("Support: %s\n", SUPPORT);
 				return 1;
 			}else{
 				fprintf(stderr, "%s: %s: invalid option\n", argv[0], argv[i]);
@@ -51,7 +53,16 @@ int main(int argc, char** argv){
 			loaded = true;
 		}
 	}
+#ifdef HAS_REPL_SUPPORT
 	if(!loaded){
 		printf("Welcome to Serenade LISP %s\n", SERENADE_VERSION);
+		printf("Support: %s\n", SUPPORT);
 	}
+	return 0;
+#else
+	if(!loaded){
+		fprintf(stderr, "usage: %s [options] input\n", argv[0]);
+		return 1;
+	}
+#endif
 }
