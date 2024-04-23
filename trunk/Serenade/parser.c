@@ -48,6 +48,30 @@ struct sn_generic {
 };
 */
 
+#define PUSH_STACK(x)		if(strlen(argbuf) > 0 && br_stack[x] >= 0){ \
+					struct sn_generic* new_gn = malloc(sizeof(*new_gn)); \
+					new_gn->type = argbufmode; \
+					if(argbufmode == SN_TYPE_DOUBLE){ \
+						new_gn->number = atof(argbuf); \
+					}else if(argbufmode == SN_TYPE_STRING){ \
+						new_gn->string = sn_strdup(argbuf); \
+						new_gn->string_length = strlen(argbuf); \
+					} \
+					int j; \
+					struct sn_generic** old_args = gn_stack[x]->tree->args; \
+					for(j = 0; old_args[j] != NULL; j++); \
+					gn_stack[x]->tree->args = malloc(sizeof(*gn_stack[x]->tree->args) * (j + 2)); \
+					for(j = 0; old_args[j] != NULL; j++){ \
+						gn_stack[x]->tree->args[j] = old_args[j]; \
+					} \
+					gn_stack[x]->tree->args[j] = new_gn; \
+					gn_stack[x]->tree->args[j + 1] = NULL; \
+					free(old_args); \
+				} \
+				free(argbuf); \
+				argbuf = malloc(1); \
+				argbuf[0] = 0;
+
 struct sn_generic* sn_expr_parse(char* data, unsigned long long size){
 	int i;
 	int br = 0;
@@ -60,11 +84,24 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size){
 		op_stack[i] = NULL;
 		gn_stack[i] = NULL;
 	}
+	int argbufmode = 0;
+	char* argbuf = malloc(1);
+	argbuf[0] = 0;
 	for(i = 0; i < size; i++){
 		char c = data[i];
 		if(c == '"'){
 			dq = !dq;
+			if(!dq){
+				PUSH_STACK(br - 1);
+			}
 		}else if(dq){
+			argbufmode = SN_TYPE_STRING;
+			char cbuf[2];
+			cbuf[0] = c;
+			cbuf[1] = 0;
+			char* tmp = argbuf;
+			argbuf = sn_strcat(tmp, cbuf);
+			free(tmp);
 		}else if(c == '('){
 			br++;
 			gn_stack[br - 1] = malloc(sizeof(*gn_stack));
@@ -92,10 +129,13 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size){
 				gn_stack[br - 2]->tree->args[j] = gn_stack[br - 1];
 				gn_stack[br - 2]->tree->args[j + 1] = NULL;
 				free(old_args);
+				PUSH_STACK(br - 1);
+			}else if(strlen(argbuf) > 0){
 			}
 			br--;
 		}else if(br > 0){
 			if(c == ' '){
+				PUSH_STACK(br - 1);
 				br_stack[br - 1]++;
 			}else if(br_stack[br - 1] == 0){
 				char cbuf[2];
@@ -104,10 +144,18 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size){
 				char* tmp = op_stack[br - 1];
 				op_stack[br - 1] = sn_strcat(tmp, cbuf);
 				free(tmp);
-			}else if(br_stack[br - 1] > 0){
+			}else{
+				argbufmode = SN_TYPE_DOUBLE;
+				char cbuf[2];
+				cbuf[0] = c;
+				cbuf[1] = 0;
+				char* tmp = argbuf;
+				argbuf = sn_strcat(tmp, cbuf);
+				free(tmp);
 			}
 		}
 	}
+	free(argbuf);
 	struct sn_generic* gen = gn_stack[0];
 	free(gn_stack);
 	free(br_stack);

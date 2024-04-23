@@ -32,7 +32,7 @@
 #define __SERENADE_PARSER_H__
 
 enum types {
-	SN_TYPE_DOUBLE,
+	SN_TYPE_DOUBLE = 0,
 	SN_TYPE_STRING,
 	SN_TYPE_TREE,
 	SN_TYPE_PTR,

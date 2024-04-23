@@ -59,6 +59,11 @@ void _sn_print_generic(struct sn_generic* gen, int n){
 				_sn_print_generic(gen->tree->args[i], n + 1);
 			}
 		}
+	}else if(gen->type == SN_TYPE_DOUBLE){
+		fprintf(stderr, "%f\n", gen->number);
+	}else if(gen->type == SN_TYPE_STRING){
+		fwrite(gen->string, 1, gen->string_length, stderr);
+		fprintf(stderr, "\n");
 	}
 }
 
