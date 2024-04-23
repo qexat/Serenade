@@ -47,5 +47,6 @@ struct sn_interpreter* sn_create_interpreter(void);
 void sn_interpreter_free(struct sn_interpreter* sn);
 void sn_set_variable(struct sn_interpreter* sn, const char* name, struct sn_generic* gen);
 void sn_set_handler(struct sn_interpreter* sn, const char* name, struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**));
+int sn_eval(struct sn_interpreter* sn, char* data, unsigned long long len);
 
 #endif

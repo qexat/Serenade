@@ -30,6 +30,7 @@
 
 #include "interpreter.h"
 
+#include "run.h"
 #include "util.h"
 
 #include <stdbool.h>
@@ -165,4 +166,22 @@ void sn_set_handler(struct sn_interpreter* sn, const char* name, struct sn_gener
 		sn->variables[i]->handler = handler;
 		sn->variables[i + 1] = NULL;
 	}
+}
+
+int sn_eval(struct sn_interpreter* sn, char* data, unsigned long long len) {
+	struct sn_generic** gens = sn_parse(data, len);
+	int r = 0;
+	if(gens != NULL) {
+		int i;
+		for(i = 0; gens[i] != NULL; i++) {
+			if(r == 0) {
+				if(sn_run(sn, gens[i]) != 0) {
+					r = 1;
+				}
+				sn_generic_free(gens[i]);
+			}
+		}
+		free(gens);
+	}
+	return r;
 }

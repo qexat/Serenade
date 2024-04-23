@@ -89,4 +89,8 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 	return NULL;
 }
 
-int sn_run(struct sn_interpreter* sn, struct sn_generic* gen) { _sn_run(sn, gen); }
+int sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
+	struct sn_generic* rgen = _sn_run(sn, gen);
+	if(rgen == NULL) return 1;
+	return 0;
+}

@@ -68,18 +68,11 @@ int main(int argc, char** argv) {
 					return 1;
 				}
 				fread(str, 1, s.st_size, f);
-				struct sn_generic** t = sn_parse(str, s.st_size);
-				if(t != NULL) {
-					int j;
-					struct sn_interpreter* sn = sn_create_interpreter();
-					for(j = 0; t[j] != NULL; j++) {
-						sn_run(sn, t[j]);
-						sn_generic_free(t[j]);
-					}
-					sn_interpreter_free(sn);
-					free(t);
-				}
+				struct sn_interpreter* sn = sn_create_interpreter();
+				int r = sn_eval(sn, str, s.st_size);
+				sn_interpreter_free(sn);
 				free(str);
+				return r;
 			} else {
 				fprintf(stderr, "%s: %s: stat fail\n", argv[0], argv[i]);
 				return 1;
@@ -91,6 +84,44 @@ int main(int argc, char** argv) {
 		printf("Welcome to Serenade LISP %s\n", SERENADE_VERSION);
 		printf("Support: %s\n", SUPPORT);
 		printf("Parser stack size: %d\n", PARSER_STACK_SIZE);
+		struct sn_interpreter* sn = sn_create_interpreter();
+		char cbuf[2];
+		cbuf[0] = '\n';
+		cbuf[1] = 0;
+		char* str = malloc(1);
+		str[0] = 0;
+		int br = 0;
+		while(1) {
+			if(cbuf[0] == '\n') {
+				if(br == 0 && strlen(str) > 0) {
+					sn_eval(sn, str, strlen(str));
+					free(str);
+					str = malloc(1);
+					str[0] = 0;
+					printf("\n");
+				} else if(br > 0) {
+					char* tmp = str;
+					str = sn_strcat(tmp, cbuf);
+					free(tmp);
+				}
+				printf("> ");
+				fflush(stdout);
+			}
+			int l = fread(cbuf, 1, 1, stdin);
+			if(l <= 0) break;
+			if(cbuf[0] == '(') {
+				br++;
+			} else if(cbuf[0] == ')') {
+				br--;
+			}
+			if(cbuf[0] != '\r' && cbuf[0] != '\n') {
+				char* tmp = str;
+				str = sn_strcat(tmp, cbuf);
+				free(tmp);
+			}
+		}
+		free(str);
+		sn_interpreter_free(sn);
 	}
 	return 0;
 #else
