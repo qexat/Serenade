@@ -91,9 +91,6 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size){
 		char c = data[i];
 		if(c == '"'){
 			dq = !dq;
-			if(!dq){
-				PUSH_STACK(br - 1);
-			}
 		}else if(dq){
 			argbufmode = SN_TYPE_STRING;
 			char cbuf[2];
@@ -102,6 +99,7 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size){
 			char* tmp = argbuf;
 			argbuf = sn_strcat(tmp, cbuf);
 			free(tmp);
+		}else if(c == '\n'){
 		}else if(c == '('){
 			br++;
 			gn_stack[br - 1] = malloc(sizeof(*gn_stack));
@@ -118,6 +116,7 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size){
 				gn_stack[br - 1]->tree->op->name = sn_strdup(op_stack[br - 1]);
 			}
 			br_stack[br - 1] = 0;
+			PUSH_STACK(br - 1);
 			if(br_stack[br - 2] > 0){
 				int j;
 				struct sn_generic** old_args = gn_stack[br - 2]->tree->args;
@@ -129,8 +128,6 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size){
 				gn_stack[br - 2]->tree->args[j] = gn_stack[br - 1];
 				gn_stack[br - 2]->tree->args[j + 1] = NULL;
 				free(old_args);
-				PUSH_STACK(br - 1);
-			}else if(strlen(argbuf) > 0){
 			}
 			br--;
 		}else if(br > 0){

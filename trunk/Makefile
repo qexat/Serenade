@@ -1,7 +1,7 @@
 # $Id$
 
 CC = cc
-CFLAGS = -std=c99
+CFLAGS = -std=c99 -g
 LDFLAGS =
 LIBS =
 SUFFIX =
