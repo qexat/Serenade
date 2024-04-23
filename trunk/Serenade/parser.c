@@ -115,8 +115,8 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size){
 			if(br > 0){
 				gn_stack[br - 1]->tree->op->name = sn_strdup(op_stack[br - 1]);
 			}
+			PUSH_STACK(br - 1);
 			br_stack[br - 1] = 0;
-			PUSH_STACK(br - 2);
 			if(br_stack[br - 2] > 0){
 				int j;
 				struct sn_generic** old_args = gn_stack[br - 2]->tree->args;
