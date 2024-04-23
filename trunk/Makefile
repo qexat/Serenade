@@ -6,6 +6,8 @@ LDFLAGS =
 LIBS =
 SUFFIX =
 
+.include "platform.mk"
+
 .PHONY: all ./Serenade
 
 all: ./Tool ./Serenade
