@@ -170,7 +170,10 @@ struct sn_generic** sn_parse(char* data, unsigned long long size) {
 	gens[0] = NULL;
 	for(i = 0; i < size; i++) {
 		char c = data[i];
-		if(c == '"') {
+		if(c == ';') {
+			for(; i < size && data[i] != '\n'; i++)
+				;
+		} else if(c == '"') {
 			dq = !dq;
 		} else if(dq) {
 		} else if(c == '(') {
