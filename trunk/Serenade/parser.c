@@ -82,14 +82,15 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size) {
 	int i;
 	int br = 0;
 	bool dq = false;
-	struct sn_generic** gn_stack = malloc(sizeof(*gn_stack) * STACK_SIZE);
-	int* index_stack = malloc(sizeof(int) * STACK_SIZE);
+	struct sn_generic** gn_stack = malloc(sizeof(*gn_stack) * PARSER_STACK_SIZE);
+	int* index_stack = malloc(sizeof(int) * PARSER_STACK_SIZE);
 	char* argbuf = malloc(1);
 	argbuf[0] = 0;
 	int argbufmode = SN_TYPE_VOID;
 	for(i = 0; i < size; i++) {
 		char c = data[i];
-		if(c == '"') {
+		if(c == '\r') {
+		} else if(c == '"') {
 			dq = !dq;
 		} else if(dq) {
 			char cbuf[2] = {c, 0};
@@ -121,7 +122,7 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size) {
 			}
 			br--;
 		} else {
-			if(c == ' ') {
+			if(c == ' ' || c == '\n') {
 				if(strlen(argbuf) > 0) {
 					push_stack(gn_stack[br - 1], argbuf, argbufmode);
 					index_stack[br - 1]++;

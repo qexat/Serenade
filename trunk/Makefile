@@ -6,7 +6,11 @@ LDFLAGS =
 LIBS =
 SUFFIX =
 
+.if "$(PLATFORM)" != ""
+.include "platforms/${PLATFORM}.mk"
+.else
 .include "platform.mk"
+.endif
 
 .PHONY: all ./Serenade ./Tool replace format
 
@@ -16,6 +20,7 @@ all: ./Tool ./config.h ./Serenade
 	$(MAKE) -C ./Tool CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)"
 
 ./config.h:
+	if [ ! -e ./Tool/configgen ]; then $(MAKE) ./Tool ; fi
 	./Tool/configgen $@
 
 ./Serenade::

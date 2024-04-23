@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 			if(strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-V") == 0) {
 				printf("Serenade LISP %s\n", SERENADE_VERSION);
 				printf("Support: %s\n", SUPPORT);
-				printf("Stack size: %d\n", STACK_SIZE);
+				printf("Parser stack size: %d\n", PARSER_STACK_SIZE);
 				return 1;
 			} else {
 				fprintf(stderr, "%s: %s: invalid option\n", argv[0], argv[i]);
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
 	if(!loaded) {
 		printf("Welcome to Serenade LISP %s\n", SERENADE_VERSION);
 		printf("Support: %s\n", SUPPORT);
-		printf("Stack size: %d\n", STACK_SIZE);
+		printf("Parser stack size: %d\n", PARSER_STACK_SIZE);
 	}
 	return 0;
 #else

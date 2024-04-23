@@ -54,6 +54,7 @@ void _sn_print_generic(struct sn_generic* gen, int n) {
 	fprintf(stderr, "[%2d]", gen->type);
 	for(i = 0; i < n; i++) fprintf(stderr, "    ");
 	if(gen->type == SN_TYPE_TREE) {
+		fprintf(stderr, "(Tree)\n");
 		if(gen->tree->args != NULL) {
 			for(i = 0; gen->tree->args[i] != NULL; i++) {
 				_sn_print_generic(gen->tree->args[i], n + 1);
@@ -61,10 +62,11 @@ void _sn_print_generic(struct sn_generic* gen, int n) {
 		}
 	} else if(gen->type == SN_TYPE_DOUBLE) {
 		fprintf(stderr, "%f", gen->number);
+		fprintf(stderr, "\n");
 	} else if(gen->type == SN_TYPE_STRING || gen->type == SN_TYPE_FUNCTION) {
 		fwrite(gen->string, 1, gen->string_length, stderr);
+		fprintf(stderr, "\n");
 	}
-	fprintf(stderr, "\n");
 }
 
 void sn_print_generic(struct sn_generic* gen) { _sn_print_generic(gen, 0); }
