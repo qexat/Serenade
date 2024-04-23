@@ -36,9 +36,11 @@ const char* asks[] = {
 	"y",
 	"HAS_REPL_SUPPORT",
 	"Do you want the REPL support?",
+
 	"n",
 	"HAS_FFI_SUPPORT",
 	"Do you want the FFI support?",
+
 	NULL
 };
 
