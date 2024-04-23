@@ -30,11 +30,11 @@
 
 #include "util.h"
 
-#include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-char* sn_strcat(const char* str1, const char* str2){
+char* sn_strcat(const char* str1, const char* str2) {
 	char* str = malloc(strlen(str1) + strlen(str2) + 1);
 	memcpy(str, str1, strlen(str1));
 	memcpy(str + strlen(str1), str2, strlen(str2));
@@ -42,31 +42,29 @@ char* sn_strcat(const char* str1, const char* str2){
 	return str;
 }
 
-char* sn_strdup(const char* str1){
+char* sn_strdup(const char* str1) {
 	char* str = malloc(strlen(str1) + 1);
 	memcpy(str, str1, strlen(str1));
 	str[strlen(str1)] = 0;
 	return str;
 }
 
-void _sn_print_generic(struct sn_generic* gen, int n){
+void _sn_print_generic(struct sn_generic* gen, int n) {
 	int i;
+	fprintf(stderr, "[%2d]", gen->type);
 	for(i = 0; i < n; i++) fprintf(stderr, "    ");
-	if(gen->type == SN_TYPE_TREE){
-		fprintf(stderr, "%s\n", gen->tree->op->name);
-		if(gen->tree->args != NULL){
-			for(i = 0; gen->tree->args[i] != NULL; i++){
+	if(gen->type == SN_TYPE_TREE) {
+		if(gen->tree->args != NULL) {
+			for(i = 0; gen->tree->args[i] != NULL; i++) {
 				_sn_print_generic(gen->tree->args[i], n + 1);
 			}
 		}
-	}else if(gen->type == SN_TYPE_DOUBLE){
-		fprintf(stderr, "%f\n", gen->number);
-	}else if(gen->type == SN_TYPE_STRING){
+	} else if(gen->type == SN_TYPE_DOUBLE) {
+		fprintf(stderr, "%f", gen->number);
+	} else if(gen->type == SN_TYPE_STRING || gen->type == SN_TYPE_FUNCTION) {
 		fwrite(gen->string, 1, gen->string_length, stderr);
-		fprintf(stderr, "\n");
 	}
+	fprintf(stderr, "\n");
 }
 
-void sn_print_generic(struct sn_generic* gen){
-	_sn_print_generic(gen, 0);
-}
+void sn_print_generic(struct sn_generic* gen) { _sn_print_generic(gen, 0); }

@@ -31,14 +31,7 @@
 #ifndef __SERENADE_PARSER_H__
 #define __SERENADE_PARSER_H__
 
-enum types {
-	SN_TYPE_DOUBLE = 0,
-	SN_TYPE_STRING,
-	SN_TYPE_TREE,
-	SN_TYPE_PTR,
-	SN_TYPE_FUNCTION,
-	SN_TYPE_VOID
-};
+enum types { SN_TYPE_DOUBLE = 0, SN_TYPE_STRING, SN_TYPE_TREE, SN_TYPE_PTR, SN_TYPE_FUNCTION, SN_TYPE_VOID };
 
 struct sn_generic {
 	int type;
@@ -51,7 +44,6 @@ struct sn_generic {
 };
 
 struct sn_tree {
-	struct sn_generic* op;
 	struct sn_generic** args;
 };
 

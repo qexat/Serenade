@@ -29,8 +29,8 @@
 /* --- END LICENSE --- */
 
 #include "parser.h"
-#include "util.h"
 #include "../config.h"
+#include "util.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -48,140 +48,137 @@ struct sn_generic {
 };
 */
 
-#define PUSH_STACK(x)		if(strlen(argbuf) > 0 && br_stack[x] >= 0){ \
-					struct sn_generic* new_gn = malloc(sizeof(*new_gn)); \
-					new_gn->type = argbufmode; \
-					if(argbufmode == SN_TYPE_DOUBLE){ \
-						new_gn->number = atof(argbuf); \
-					}else if(argbufmode == SN_TYPE_STRING){ \
-						new_gn->string = sn_strdup(argbuf); \
-						new_gn->string_length = strlen(argbuf); \
-					} \
-					int j; \
-					struct sn_generic** old_args = gn_stack[x]->tree->args; \
-					for(j = 0; old_args[j] != NULL; j++); \
-					gn_stack[x]->tree->args = malloc(sizeof(*gn_stack[x]->tree->args) * (j + 2)); \
-					for(j = 0; old_args[j] != NULL; j++){ \
-						gn_stack[x]->tree->args[j] = old_args[j]; \
-					} \
-					gn_stack[x]->tree->args[j] = new_gn; \
-					gn_stack[x]->tree->args[j + 1] = NULL; \
-					free(old_args); \
-				} \
-				free(argbuf); \
-				argbuf = malloc(1); \
-				argbuf[0] = 0;
+void push_stack_generic(struct sn_generic* gen, struct sn_generic* pushthis) {
+	if(gen->type == SN_TYPE_TREE) {
+		struct sn_generic** old_gen = gen->tree->args;
+		int i;
+		for(i = 0; old_gen[i] != NULL; i++)
+			;
+		gen->tree->args = malloc(sizeof(struct sn_generic*) * (i + 2));
+		for(i = 0; old_gen[i] != NULL; i++) {
+			gen->tree->args[i] = old_gen[i];
+		}
 
-struct sn_generic* sn_expr_parse(char* data, unsigned long long size){
+		gen->tree->args[i] = pushthis;
+		gen->tree->args[i + 1] = NULL;
+
+		free(old_gen);
+	}
+}
+
+void push_stack(struct sn_generic* gen, char* buf, int mode) {
+	struct sn_generic* newgen = malloc(sizeof(struct sn_generic));
+	newgen->type = mode;
+	if(mode == SN_TYPE_STRING || mode == SN_TYPE_FUNCTION) {
+		newgen->string = sn_strdup(buf);
+		newgen->string_length = strlen(buf);
+	} else if(mode == SN_TYPE_DOUBLE) {
+		newgen->number = atof(buf);
+	}
+	push_stack_generic(gen, newgen);
+}
+
+struct sn_generic* sn_expr_parse(char* data, unsigned long long size) {
 	int i;
 	int br = 0;
 	bool dq = false;
-	int* br_stack = malloc(sizeof(*br_stack) * STACK_SIZE);
-	char** op_stack = malloc(sizeof(*op_stack) * STACK_SIZE);
 	struct sn_generic** gn_stack = malloc(sizeof(*gn_stack) * STACK_SIZE);
-	for(i = 0; i < STACK_SIZE; i++){
-		br_stack[i] = 0;
-		op_stack[i] = NULL;
-		gn_stack[i] = NULL;
-	}
-	int argbufmode = 0;
+	int* index_stack = malloc(sizeof(int) * STACK_SIZE);
 	char* argbuf = malloc(1);
 	argbuf[0] = 0;
-	for(i = 0; i < size; i++){
+	int argbufmode = SN_TYPE_VOID;
+	for(i = 0; i < size; i++) {
 		char c = data[i];
-		if(c == '"'){
+		if(c == '"') {
 			dq = !dq;
-		}else if(dq){
-			argbufmode = SN_TYPE_STRING;
-			char cbuf[2];
-			cbuf[0] = c;
-			cbuf[1] = 0;
+		} else if(dq) {
+			char cbuf[2] = {c, 0};
+
 			char* tmp = argbuf;
 			argbuf = sn_strcat(tmp, cbuf);
 			free(tmp);
-		}else if(c == '\n'){
-		}else if(c == '('){
+			argbufmode = SN_TYPE_STRING;
+		} else if(c == '(') {
+			gn_stack[br] = malloc(sizeof(struct sn_generic));
+			gn_stack[br]->type = SN_TYPE_TREE;
+			gn_stack[br]->tree = malloc(sizeof(struct sn_tree));
+			gn_stack[br]->tree->args = malloc(sizeof(struct sn_generic*));
+			gn_stack[br]->tree->args[0] = NULL;
+			index_stack[br] = 0;
 			br++;
-			gn_stack[br - 1] = malloc(sizeof(*gn_stack));
-			gn_stack[br - 1]->type = SN_TYPE_TREE;
-			gn_stack[br - 1]->tree = malloc(sizeof(*gn_stack[br - 1]->tree));
-			gn_stack[br - 1]->tree->op = malloc(sizeof(*gn_stack[br - 1]->tree->op));
-			gn_stack[br - 1]->tree->op->type = SN_TYPE_FUNCTION;
-			gn_stack[br - 1]->tree->args = malloc(sizeof(*gn_stack[br - 1]->tree->args));
-			gn_stack[br - 1]->tree->args[0] = NULL;
-			op_stack[br - 1] = malloc(1);
-			op_stack[br - 1][0] = 0;
-		}else if(c == ')'){
-			if(br > 0){
-				gn_stack[br - 1]->tree->op->name = sn_strdup(op_stack[br - 1]);
+		} else if(c == ')') {
+			if(strlen(argbuf) > 0) {
+				push_stack(gn_stack[br - 1], argbuf, argbufmode);
+				index_stack[br - 1]++;
 			}
-			PUSH_STACK(br - 1);
-			br_stack[br - 1] = 0;
-			if(br_stack[br - 2] > 0){
-				int j;
-				struct sn_generic** old_args = gn_stack[br - 2]->tree->args;
-				for(j = 0; old_args[j] != NULL; j++);
-				gn_stack[br - 2]->tree->args = malloc(sizeof(*gn_stack[br - 2]->tree->args) * (j + 2));
-				for(j = 0; old_args[j] != NULL; j++){
-					gn_stack[br - 2]->tree->args[j] = old_args[j];
-				}
-				gn_stack[br - 2]->tree->args[j] = gn_stack[br - 1];
-				gn_stack[br - 2]->tree->args[j + 1] = NULL;
-				free(old_args);
+			free(argbuf);
+			argbuf = malloc(1);
+			argbuf[0] = 0;
+			argbufmode = SN_TYPE_VOID;
+			if(br > 1) {
+				push_stack_generic(gn_stack[br - 2], gn_stack[br - 1]);
+				index_stack[br - 2]++;
 			}
 			br--;
-		}else if(br > 0){
-			if(c == ' '){
-				PUSH_STACK(br - 1);
-				br_stack[br - 1]++;
-			}else if(br_stack[br - 1] == 0){
-				char cbuf[2];
-				cbuf[0] = c;
-				cbuf[1] = 0;
-				char* tmp = op_stack[br - 1];
-				op_stack[br - 1] = sn_strcat(tmp, cbuf);
-				free(tmp);
-			}else{
-				argbufmode = SN_TYPE_DOUBLE;
-				char cbuf[2];
-				cbuf[0] = c;
-				cbuf[1] = 0;
+		} else {
+			if(c == ' ') {
+				if(strlen(argbuf) > 0) {
+					push_stack(gn_stack[br - 1], argbuf, argbufmode);
+					index_stack[br - 1]++;
+				}
+				free(argbuf);
+				argbuf = malloc(1);
+				argbuf[0] = 0;
+				argbufmode = SN_TYPE_VOID;
+			} else {
+				char cbuf[2] = {c, 0};
+
 				char* tmp = argbuf;
 				argbuf = sn_strcat(tmp, cbuf);
 				free(tmp);
+
+				if(argbufmode == SN_TYPE_VOID) {
+					if(c == '.' || (c >= '0' && c <= '9')) {
+						argbufmode = SN_TYPE_DOUBLE;
+					} else {
+						argbufmode = SN_TYPE_FUNCTION;
+					}
+				}
 			}
 		}
 	}
+
 	free(argbuf);
+
 	struct sn_generic* gen = gn_stack[0];
 	free(gn_stack);
-	free(br_stack);
-	free(op_stack);
+	free(index_stack);
+
 	return gen;
 }
 
-struct sn_generic** sn_parse(char* data, unsigned long long size){
+struct sn_generic** sn_parse(char* data, unsigned long long size) {
 	int br = 0;
 	int i;
 	int start = 0;
 	bool dq = false;
-	for(i = 0; i < size; i++){
+	for(i = 0; i < size; i++) {
 		char c = data[i];
-		if(c == '"'){
+		if(c == '"') {
 			dq = !dq;
-		}else if(dq){
-		}else if(c == '('){
-			if(br == 0){
+		} else if(dq) {
+		} else if(c == '(') {
+			if(br == 0) {
 				start = i;
 			}
 			br++;
-		}else if(c == ')'){
+		} else if(c == ')') {
 			br--;
-			if(br == 0){
+			if(br == 0) {
 				char* d = malloc(i - start + 1);
 				memcpy(d, data + start, i - start + 1);
 				struct sn_generic* gen = sn_expr_parse(d, i - start + 1);
-				if(gen != NULL){
+				if(gen != NULL) {
 					sn_print_generic(gen);
 					sn_generic_free(gen);
 				}
@@ -192,22 +189,19 @@ struct sn_generic** sn_parse(char* data, unsigned long long size){
 	return NULL;
 }
 
-void sn_generic_free(struct sn_generic* g){
-	if(g->type == SN_TYPE_STRING){
+void sn_generic_free(struct sn_generic* g) {
+	if(g->type == SN_TYPE_STRING) {
 		free(g->string);
-	}else if(g->type == SN_TYPE_TREE){
+	} else if(g->type == SN_TYPE_TREE) {
 		sn_tree_free(g->tree);
 	}
 	free(g);
 }
 
-void sn_tree_free(struct sn_tree* t){
-	if(t->op != NULL){
-		sn_generic_free(t->op);
-	}
-	if(t->args != NULL){
+void sn_tree_free(struct sn_tree* t) {
+	if(t->args != NULL) {
 		int i;
-		for(i = 0; t->args[i] != NULL; i++){
+		for(i = 0; t->args[i] != NULL; i++) {
 			sn_generic_free(t->args[i]);
 		}
 		free(t->args);

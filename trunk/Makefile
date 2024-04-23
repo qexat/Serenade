@@ -8,7 +8,7 @@ SUFFIX =
 
 .include "platform.mk"
 
-.PHONY: all ./Serenade ./Tool replace
+.PHONY: all ./Serenade ./Tool replace format
 
 all: ./Tool ./config.h ./Serenade
 
@@ -35,3 +35,6 @@ replace:
 		mv $$i.new $$i; \
 		echo "done"; \
 	done
+
+format:
+	clang-format -i $(FILES)

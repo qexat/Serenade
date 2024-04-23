@@ -28,67 +28,67 @@
 /* -------------------------------------------------------------------------- */
 /* --- END LICENSE --- */
 
-#include "serenade.h"
-#include "parser.h"
 #include "../config.h"
+#include "parser.h"
+#include "serenade.h"
 
-#include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 
-int main(int argc, char** argv){
+int main(int argc, char** argv) {
 	int i;
 	bool loaded = false;
-	for(i = 1; i < argc; i++){
-		if(argv[i][0] == '-'){
-			if(strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-V") == 0){
+	for(i = 1; i < argc; i++) {
+		if(argv[i][0] == '-') {
+			if(strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-V") == 0) {
 				printf("Serenade LISP %s\n", SERENADE_VERSION);
 				printf("Support: %s\n", SUPPORT);
 				printf("Stack size: %d\n", STACK_SIZE);
 				return 1;
-			}else{
+			} else {
 				fprintf(stderr, "%s: %s: invalid option\n", argv[0], argv[i]);
 				return 1;
 			}
-		}else{
+		} else {
 			/* file input */
 			loaded = true;
 			struct stat s;
-			if(stat(argv[i], &s) == 0){
+			if(stat(argv[i], &s) == 0) {
 				char* str = malloc(s.st_size);
 				FILE* f = fopen(argv[i], "rb");
-				if(f == NULL){
+				if(f == NULL) {
 					fprintf(stderr, "%s: %s: fopen fail\n", argv[0], argv[i]);
 					free(str);
 					return 1;
 				}
 				fread(str, 1, s.st_size, f);
 				struct sn_generic** t = sn_parse(str, s.st_size);
-				if(t != NULL){
+				if(t != NULL) {
 					int j;
-					for(j = 0; t[j] != NULL; j++){
+					for(j = 0; t[j] != NULL; j++) {
 						sn_generic_free(t[j]);
 					}
 					free(t);
 				}
 				free(str);
-			}else{
+			} else {
 				fprintf(stderr, "%s: %s: stat fail\n", argv[0], argv[i]);
 				return 1;
 			}
 		}
 	}
 #ifdef HAS_REPL_SUPPORT
-	if(!loaded){
+	if(!loaded) {
 		printf("Welcome to Serenade LISP %s\n", SERENADE_VERSION);
 		printf("Support: %s\n", SUPPORT);
 		printf("Stack size: %d\n", STACK_SIZE);
 	}
 	return 0;
 #else
-	if(!loaded){
+	if(!loaded) {
 		fprintf(stderr, "usage: %s [options] input\n", argv[0]);
 		return 1;
 	}

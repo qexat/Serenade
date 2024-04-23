@@ -28,39 +28,31 @@
 /* -------------------------------------------------------------------------- */
 /* --- END LICENSE --- */
 
-#include <stdio.h>
-#include <stdbool.h>
 #include <ctype.h>
+#include <stdbool.h>
+#include <stdio.h>
 
 char choice[256];
 
-char* asks[] = {
-	"repl",
-	"y",
-	"HAS_REPL_SUPPORT",
-	"Do you want the REPL support?",
+char* asks[] = {"repl", "y", "HAS_REPL_SUPPORT", "Do you want the REPL support?",
 
-	"ffi",
-	"n",
-	"HAS_FFI_SUPPORT",
-	"Do you want the FFI support?",
+		"ffi",	"n", "HAS_FFI_SUPPORT",	 "Do you want the FFI support?",
 
-	NULL
-};
+		NULL};
 
-void show_dialog(int n){
+void show_dialog(int n) {
 	fprintf(stderr, "[default is %c] %s ", asks[n * 4 + 1][0], asks[n * 4 + 3]);
 	fflush(stderr);
 }
 
-int main(int argc, char** argv){
+int main(int argc, char** argv) {
 	FILE* out = stdout;
 	bool load = false;
-	if(argv[1] != NULL){
+	if(argv[1] != NULL) {
 		out = fopen(argv[1], "w");
-		if(out != NULL){
+		if(out != NULL) {
 			load = true;
-		}else{
+		} else {
 			fprintf(stderr, "%s: %s: couldn't open the file\n", argv[0], argv[1]);
 			return 1;
 		}
@@ -71,12 +63,12 @@ int main(int argc, char** argv){
 	bool nl = false;
 	int n = 0;
 	show_dialog(n);
-	while(true){
+	while(true) {
 		oldc = c;
 		if(fread(&c, 1, 1, stdin) <= 0) break;
-		if(c == '\n'){
+		if(c == '\n') {
 			char ch = asks[n * 4 + 1][0];
-			if(nl){
+			if(nl) {
 				ch = tolower(oldc);
 			}
 			choice[n] = ch;
@@ -85,7 +77,7 @@ int main(int argc, char** argv){
 			nl = false;
 			if(asks[n * 4 + 1] == NULL) break;
 			show_dialog(n);
-		}else{
+		} else {
 			nl = true;
 		}
 	}
@@ -95,7 +87,7 @@ int main(int argc, char** argv){
 	scanf("%d", &stack_size);
 	fprintf(out, "#define STACK_SIZE %d\n", stack_size);
 	fprintf(out, "#define SUPPORT \"");
-	for(n = 0; asks[n * 4] != NULL; n++){
+	for(n = 0; asks[n * 4] != NULL; n++) {
 		if(n > 0) fprintf(out, " ");
 		fprintf(out, "%c%s", choice[n] == 'y' ? '+' : '-', asks[n * 4]);
 	}
