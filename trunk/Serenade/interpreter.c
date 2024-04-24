@@ -89,6 +89,22 @@ struct sn_generic* print_handler(struct sn_interpreter* sn, int args, struct sn_
 	return gen;
 }
 
+struct sn_generic* eval_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
+	int i;
+	int result = 0;
+	int r = 0;
+	for(i = 1; i < args; i++) {
+		if(gens[i]->type == SN_TYPE_STRING) {
+			r = sn_eval(sn, gens[i]->string, gens[i]->string_length);
+			if(r != 0) result = 1;
+		}
+	}
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	gen->type = SN_TYPE_DOUBLE;
+	gen->number = result;
+	return gen;
+}
+
 struct sn_interpreter* sn_create_interpreter(void) {
 	struct sn_interpreter* sn = malloc(sizeof(struct sn_interpreter));
 	sn->variables = malloc(sizeof(struct sn_interpreter_kv*));
@@ -99,6 +115,7 @@ struct sn_interpreter* sn_create_interpreter(void) {
 	sn_set_handler(sn, "*", math_handler);
 	sn_set_handler(sn, "/", math_handler);
 	sn_set_handler(sn, "print", print_handler);
+	sn_set_handler(sn, "eval", eval_handler);
 
 	return sn;
 }

@@ -32,6 +32,7 @@
 
 #include "util.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,10 +59,13 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 		if(op->type != SN_TYPE_FUNCTION) {
 			fprintf(stderr, "Cannot call non-function (Type %d)\n", op->type);
 			free(args);
+			free(r);
 			return NULL;
 		} else {
+			bool called = false;
 			for(j = 0; sn->variables[j] != NULL; j++) {
 				if(strcmp(sn->variables[j]->key, op->name) == 0) {
+					called = true;
 					struct sn_generic* op_result = NULL;
 					if(sn->variables[j]->handler != NULL) {
 						op_result = sn->variables[j]->handler(sn, argc, args);
@@ -79,6 +83,12 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 					}
 					break;
 				}
+			}
+			if(!called) {
+				fprintf(stderr, "Undefined reference to the function `%s`\n", op->name);
+				free(args);
+				free(r);
+				return NULL;
 			}
 		}
 		free(args);
