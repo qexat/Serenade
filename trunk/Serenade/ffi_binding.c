@@ -44,6 +44,12 @@
 
 ffi_cif cif;
 
+struct ffi_info {
+	void* ptr;
+	ffi_cif cif;
+	ffi_type** argtypes;
+};
+
 struct sn_generic* ffi_symbol_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
 	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
 	gen->type = SN_TYPE_VOID;
@@ -58,6 +64,20 @@ struct sn_generic* ffi_symbol_handler(struct sn_interpreter* sn, int args, struc
 	if(ptr != NULL) {
 		gen->type = SN_TYPE_PTR;
 		gen->ptr = ptr;
+	}
+	return gen;
+}
+
+struct sn_generic* ffi_function_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	gen->type = SN_TYPE_VOID;
+	if(args > 1){
+		if(gens[1]->type == SN_TYPE_PTR){
+			struct ffi_info* info = malloc(sizeof(struct ffi_info));
+			int i;
+			for(i = 2; i < args; i++){
+			}
+		}
 	}
 	return gen;
 }
@@ -87,4 +107,5 @@ void ffi_init(struct sn_interpreter* sn) {
 	sn_set_variable(sn, "ffi-loaded", gen);
 	sn_set_handler(sn, "ffi-symbol", ffi_symbol_handler);
 	sn_set_handler(sn, "ffi-load", ffi_load_handler);
+	sn_set_handler(sn, "ffi-function", ffi_function_handler);
 }
