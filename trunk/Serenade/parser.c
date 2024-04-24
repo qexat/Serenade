@@ -125,7 +125,7 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size) {
 			}
 			br--;
 		} else {
-			if(c == ' ' || c == '\n') {
+			if(c == ' ' || c == '\n' || c == '\t') {
 				if(strlen(argbuf) > 0) {
 					push_stack(gn_stack[br - 1], argbuf, argbufmode);
 					index_stack[br - 1]++;

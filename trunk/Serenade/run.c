@@ -56,7 +56,7 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 		r->type = SN_TYPE_VOID;
 
 		if(op->type != SN_TYPE_FUNCTION) {
-			fprintf(stderr, "Cannot call non-function (%d)\n", op->type);
+			fprintf(stderr, "Cannot call non-function (Type %d)\n", op->type);
 			free(args);
 			return NULL;
 		} else {
