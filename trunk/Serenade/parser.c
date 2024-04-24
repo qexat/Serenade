@@ -49,6 +49,22 @@ struct sn_generic {
 };
 */
 
+struct sn_generic* sn_generic_dup(struct sn_generic* g) {
+	if(g == NULL) return NULL;
+	struct sn_generic* r = malloc(sizeof(struct sn_generic));
+	r->type = g->type;
+	if(r->type == SN_TYPE_STRING) {
+		r->string = malloc(g->string_length);
+		r->string_length = g->string_length;
+		memcpy(r->string, g->string, r->string_length);
+	} else if(r->type == SN_TYPE_DOUBLE) {
+		r->number = g->number;
+	} else if(r->type == SN_TYPE_FUNCTION) {
+		r->name = sn_strdup(g->name);
+	}
+	return r;
+}
+
 void push_stack_generic(struct sn_generic* gen, struct sn_generic* pushthis) {
 	if(gen->type == SN_TYPE_TREE) {
 		struct sn_generic** old_gen = gen->tree->args;
@@ -73,7 +89,7 @@ void push_stack(struct sn_generic* gen, char* buf, int mode) {
 	if(mode == SN_TYPE_STRING) {
 		newgen->string = sn_strdup(buf);
 		newgen->string_length = strlen(buf);
-	} else if(mode == SN_TYPE_FUNCTION) {
+	} else if(mode == SN_TYPE_FUNCTION || mode == SN_TYPE_VARIABLE) {
 		newgen->name = sn_strdup(buf);
 	} else if(mode == SN_TYPE_DOUBLE) {
 		newgen->number = atof(buf);
@@ -108,6 +124,7 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size) {
 			gn_stack[br]->tree = malloc(sizeof(struct sn_tree));
 			gn_stack[br]->tree->args = malloc(sizeof(struct sn_generic*));
 			gn_stack[br]->tree->args[0] = NULL;
+			gn_stack[br]->used = false;
 			index_stack[br] = 0;
 			br++;
 		} else if(c == ')') {
@@ -144,8 +161,10 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size) {
 				if(argbufmode == SN_TYPE_VOID) {
 					if(c == '.' || (c >= '0' && c <= '9')) {
 						argbufmode = SN_TYPE_DOUBLE;
-					} else {
+					} else if(index_stack[br - 1] == 0) {
 						argbufmode = SN_TYPE_FUNCTION;
+					} else {
+						argbufmode = SN_TYPE_VARIABLE;
 					}
 				}
 			}
@@ -213,6 +232,8 @@ void sn_generic_free(struct sn_generic* g) {
 		free(g->string);
 	} else if(g->type == SN_TYPE_TREE) {
 		sn_tree_free(g->tree);
+	} else if(g->type == SN_TYPE_FUNCTION || g->type == SN_TYPE_VARIABLE) {
+		free(g->name);
 	}
 	free(g);
 }

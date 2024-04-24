@@ -80,12 +80,33 @@ struct sn_generic* print_handler(struct sn_interpreter* sn, int args, struct sn_
 			fwrite(gens[i]->string, 1, gens[i]->string_length, stdout);
 		} else if(gens[i]->type == SN_TYPE_VOID) {
 			printf("<void>");
+		} else if(gens[i]->type == SN_TYPE_FUNCTION) {
 		}
 		fflush(stdout);
 	}
 	printf("\n");
 	gen->type = SN_TYPE_FUNCTION;
 	gen->name = sn_strdup("print");
+	return gen;
+}
+
+struct sn_generic* defvar_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	int i;
+	if(args > 1) {
+		for(i = 1; i < args; i += 2) {
+			if(gens[i + 1] == NULL) break;
+			if(gens[i]->type == SN_TYPE_STRING) {
+				char* str = malloc(gens[i]->string_length + 1);
+				gens[i + 1]->used = true;
+				memcpy(str, gens[i]->string, gens[i]->string_length);
+				str[gens[i]->string_length] = 0;
+				sn_set_variable(sn, str, gens[i + 1]);
+				free(str);
+			}
+		}
+	}
+	gen->type = SN_TYPE_VOID;
 	return gen;
 }
 
@@ -116,6 +137,7 @@ struct sn_interpreter* sn_create_interpreter(void) {
 	sn_set_handler(sn, "/", math_handler);
 	sn_set_handler(sn, "print", print_handler);
 	sn_set_handler(sn, "eval", eval_handler);
+	sn_set_handler(sn, "define-var", defvar_handler);
 
 	return sn;
 }
@@ -136,7 +158,6 @@ void sn_set_variable(struct sn_interpreter* sn, const char* name, struct sn_gene
 	bool replaced = false;
 	for(i = 0; sn->variables[i] != NULL; i++) {
 		if(strcmp(sn->variables[i]->key, name) == 0) {
-			sn_generic_free(sn->variables[i]->value);
 			sn->variables[i]->value = gen;
 			replaced = true;
 			break;
@@ -163,7 +184,6 @@ void sn_set_handler(struct sn_interpreter* sn, const char* name, struct sn_gener
 	bool replaced = false;
 	for(i = 0; sn->variables[i] != NULL; i++) {
 		if(strcmp(sn->variables[i]->key, name) == 0) {
-			sn_generic_free(sn->variables[i]->value);
 			sn->variables[i]->handler = handler;
 			replaced = true;
 			break;
@@ -195,9 +215,9 @@ int sn_eval(struct sn_interpreter* sn, char* data, unsigned long long len) {
 				if(sn_run(sn, gens[i]) != 0) {
 					r = 1;
 				}
-				sn_generic_free(gens[i]);
 			}
 		}
+		for(i = 0; gens[i] != NULL; i++) sn_generic_free(gens[i]);
 		free(gens);
 	}
 	return r;

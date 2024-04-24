@@ -31,7 +31,9 @@
 #ifndef __SERENADE_PARSER_H__
 #define __SERENADE_PARSER_H__
 
-enum types { SN_TYPE_DOUBLE = 0, SN_TYPE_STRING, SN_TYPE_TREE, SN_TYPE_PTR, SN_TYPE_FUNCTION, SN_TYPE_VOID };
+#include <stdbool.h>
+
+enum types { SN_TYPE_DOUBLE = 0, SN_TYPE_STRING, SN_TYPE_TREE, SN_TYPE_PTR, SN_TYPE_FUNCTION, SN_TYPE_VOID, SN_TYPE_VARIABLE };
 
 struct sn_generic {
 	int type;
@@ -41,6 +43,7 @@ struct sn_generic {
 	void* ptr;
 	char* name;
 	struct sn_tree* tree;
+	bool used;
 };
 
 struct sn_tree {
@@ -49,6 +52,7 @@ struct sn_tree {
 
 struct sn_generic** sn_parse(char* data, unsigned long long size);
 void sn_generic_free(struct sn_generic* g);
+struct sn_generic* sn_generic_dup(struct sn_generic* g);
 void sn_tree_free(struct sn_tree* t);
 
 #endif

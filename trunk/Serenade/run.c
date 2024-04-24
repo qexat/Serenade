@@ -44,25 +44,24 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 		if(op->type == SN_TYPE_TREE) {
 			op = _sn_run(sn, op);
 		}
-		int j;
-		for(j = 0; gen->tree->args[j]; j++)
-			;
-		struct sn_generic** args = malloc(sizeof(struct sn_generic*) * (j));
-		int argc = j;
-		for(j = 0; gen->tree->args[j]; j++) {
-			args[j] = _sn_run(sn, gen->tree->args[j]);
-		}
 
 		struct sn_generic* r = malloc(sizeof(struct sn_generic));
 		r->type = SN_TYPE_VOID;
 
 		if(op->type != SN_TYPE_FUNCTION) {
 			fprintf(stderr, "Cannot call non-function (Type %d)\n", op->type);
-			free(args);
 			free(r);
 			return NULL;
 		} else {
 			bool called = false;
+			int j;
+			for(j = 0; gen->tree->args[j]; j++)
+				;
+			struct sn_generic** args = malloc(sizeof(struct sn_generic*) * (j));
+			int argc = j;
+			for(j = 0; gen->tree->args[j]; j++) {
+				args[j] = _sn_run(sn, gen->tree->args[j]);
+			}
 			for(j = 0; sn->variables[j] != NULL; j++) {
 				if(strcmp(sn->variables[j]->key, op->name) == 0) {
 					called = true;
@@ -90,8 +89,23 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 				free(r);
 				return NULL;
 			}
+			free(args);
 		}
-		free(args);
+		return r;
+	} else if(gen->type == SN_TYPE_VARIABLE) {
+		struct sn_generic* r = malloc(sizeof(struct sn_generic));
+		r->type = SN_TYPE_VOID;
+		int i;
+		for(i = 0; sn->variables[i] != NULL; i++) {
+			if(strcmp(sn->variables[i]->key, gen->name) == 0) {
+				free(r);
+				struct sn_generic* var = sn->variables[i]->value;
+				if(var != NULL) {
+					return sn->variables[i]->value;
+				}
+				break;
+			}
+		}
 		return r;
 	} else {
 		return gen;
