@@ -28,16 +28,63 @@
 /* -------------------------------------------------------------------------- */
 /* --- END LICENSE --- */
 
-#ifndef __SERENADE_UTIL_H__
-#define __SERENADE_UTIL_H__
+#include "ffi_binding.h"
 
 #include "parser.h"
 
-#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-char* sn_strcat(const char* str1, const char* str2);
-char* sn_strdup(const char* str1);
-void sn_print_to(FILE* f, struct sn_generic* gen);
-void sn_print_generic(struct sn_generic* gen);
-
+#ifdef __MINGW32__
+#else
+#include <dlfcn.h>
 #endif
+
+#include <ffi.h>
+
+ffi_cif cif;
+
+struct sn_generic* ffi_symbol_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	gen->type = SN_TYPE_VOID;
+	void* ptr = NULL;
+	if(args == 3 && gens[1]->type == SN_TYPE_PTR && gens[2]->type == SN_TYPE_STRING) {
+		char* sym = malloc(gens[2]->string_length + 1);
+		memcpy(sym, gens[2]->string, gens[2]->string_length);
+		sym[gens[2]->string_length] = 0;
+		ptr = dlsym(gens[1]->ptr, sym);
+		free(sym);
+	}
+	if(ptr != NULL) {
+		gen->type = SN_TYPE_PTR;
+		gen->ptr = ptr;
+	}
+	return gen;
+}
+
+struct sn_generic* ffi_load_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	gen->type = SN_TYPE_VOID;
+	void* lib = NULL;
+	if(args == 2 && gens[1]->type == SN_TYPE_STRING) {
+		char* path = malloc(gens[1]->string_length + 1);
+		memcpy(path, gens[1]->string, gens[1]->string_length);
+		path[gens[1]->string_length] = 0;
+		lib = dlopen(path, RTLD_LAZY);
+		free(path);
+	}
+	if(lib != NULL) {
+		gen->type = SN_TYPE_PTR;
+		gen->ptr = lib;
+	}
+	return gen;
+}
+
+void ffi_init(struct sn_interpreter* sn) {
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	gen->type = SN_TYPE_DOUBLE;
+	gen->number = 1;
+	sn_set_variable(sn, "ffi-loaded", gen);
+	sn_set_handler(sn, "ffi-symbol", ffi_symbol_handler);
+	sn_set_handler(sn, "ffi-load", ffi_load_handler);
+}

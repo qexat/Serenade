@@ -49,6 +49,20 @@ char* sn_strdup(const char* str1) {
 	return str;
 }
 
+void sn_print_to(FILE* f, struct sn_generic* gen) {
+	if(gen->type == SN_TYPE_DOUBLE) {
+		fprintf(f, "%f", gen->number);
+	} else if(gen->type == SN_TYPE_STRING) {
+		fwrite(gen->string, 1, gen->string_length, f);
+	} else if(gen->type == SN_TYPE_VOID) {
+		fprintf(f, "<void>");
+	} else if(gen->type == SN_TYPE_FUNCTION) {
+		fprintf(f, "<function %s>", gen->name);
+	} else if(gen->type == SN_TYPE_PTR) {
+		fprintf(f, "<pointer %x>", gen->ptr);
+	}
+}
+
 void _sn_print_generic(struct sn_generic* gen, int n) {
 	int i;
 	fprintf(stderr, "[%2d]", gen->type);
@@ -60,11 +74,8 @@ void _sn_print_generic(struct sn_generic* gen, int n) {
 				_sn_print_generic(gen->tree->args[i], n + 1);
 			}
 		}
-	} else if(gen->type == SN_TYPE_DOUBLE) {
-		fprintf(stderr, "%f", gen->number);
-		fprintf(stderr, "\n");
-	} else if(gen->type == SN_TYPE_STRING || gen->type == SN_TYPE_FUNCTION) {
-		fwrite(gen->string, 1, gen->string_length, stderr);
+	} else {
+		sn_print_to(stderr, gen);
 		fprintf(stderr, "\n");
 	}
 }

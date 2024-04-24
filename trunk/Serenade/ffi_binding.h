@@ -28,16 +28,11 @@
 /* -------------------------------------------------------------------------- */
 /* --- END LICENSE --- */
 
-#ifndef __SERENADE_UTIL_H__
-#define __SERENADE_UTIL_H__
+#ifndef __SERENADE_FFI_BINDING_H__
+#define __SERENADE_FFI_BINDING_H__
 
-#include "parser.h"
+#include "interpreter.h"
 
-#include <stdio.h>
-
-char* sn_strcat(const char* str1, const char* str2);
-char* sn_strdup(const char* str1);
-void sn_print_to(FILE* f, struct sn_generic* gen);
-void sn_print_generic(struct sn_generic* gen);
+void ffi_init(struct sn_interpreter* sn);
 
 #endif

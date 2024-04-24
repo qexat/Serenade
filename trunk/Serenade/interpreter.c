@@ -30,6 +30,7 @@
 
 #include "interpreter.h"
 
+#include "../config.h"
 #include "run.h"
 #include "util.h"
 
@@ -74,14 +75,7 @@ struct sn_generic* print_handler(struct sn_interpreter* sn, int args, struct sn_
 	for(i = 1; i < args; i++) {
 		if(i > 1) printf(" ");
 		fflush(stdout);
-		if(gens[i]->type == SN_TYPE_DOUBLE) {
-			printf("%f", gens[i]->number);
-		} else if(gens[i]->type == SN_TYPE_STRING) {
-			fwrite(gens[i]->string, 1, gens[i]->string_length, stdout);
-		} else if(gens[i]->type == SN_TYPE_VOID) {
-			printf("<void>");
-		} else if(gens[i]->type == SN_TYPE_FUNCTION) {
-		}
+		sn_print_to(stdout, gens[i]);
 		fflush(stdout);
 	}
 	printf("\n");
@@ -138,6 +132,9 @@ struct sn_interpreter* sn_create_interpreter(void) {
 	sn_set_handler(sn, "print", print_handler);
 	sn_set_handler(sn, "eval", eval_handler);
 	sn_set_handler(sn, "define-var", defvar_handler);
+#ifdef HAS_FFI_SUPPORT
+	ffi_init(sn);
+#endif
 
 	return sn;
 }

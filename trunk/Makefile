@@ -3,7 +3,8 @@
 CC = cc
 CFLAGS = -std=c99 -g
 LDFLAGS =
-LIBS =
+LIBS = `cpp -DLIBS cmdline | grep -vE "^\#" | tr '\\n' ' '`
+EXTRA_OBJS = `cpp -DOBJS cmdline | grep -vE "^\#" | tr '\\n' ' '`
 SUFFIX =
 
 .if "$(PLATFORM)" != ""
@@ -24,7 +25,7 @@ all: ./Tool ./config.h ./Serenade
 	./Tool/configgen $@
 
 ./Serenade::
-	$(MAKE) -C ./Serenade CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)"
+	$(MAKE) -C ./Serenade CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)" EXTRA_OBJS="$(EXTRA_OBJS)"
 
 clean:
 	$(MAKE) -C ./Tool clean

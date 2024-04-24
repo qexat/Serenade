@@ -1,6 +1,6 @@
 # $Id$
 
-SERENADE_OBJS = main.o parser.o util.o run.o interpreter.o
+SERENADE_OBJS = main.o parser.o util.o run.o interpreter.o $(EXTRA_OBJS)
 
 .PHONY: all clean
 .SUFFIXES: .o .c

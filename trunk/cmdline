@@ -1,0 +1,17 @@
+#define COMMANDLINE
+#include "config.h"
+
+#ifdef LIBS
+#ifdef HAS_FFI_SUPPORT
+-lffi
+#ifdef __linux__
+-ldl
+#endif
+#endif
+#endif
+
+#ifdef OBJS
+#ifdef HAS_FFI_SUPPORT
+ffi_binding.o
+#endif
+#endif
