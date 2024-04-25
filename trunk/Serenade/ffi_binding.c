@@ -75,9 +75,9 @@ struct sn_generic* function_caller_handler(struct sn_interpreter* sn, int args, 
 	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
 	gen->type = SN_TYPE_VOID;
 	struct ffi_info* info = (struct ffi_info*)gens[0]->ptr;
-	void** fargs = NULL;
+	void** fargs = malloc(sizeof(void*) * (info->argc + 1));
+	fargs[info->argc] = 0;
 	if(info->argc > 0){
-		fargs = malloc(sizeof(void*) * info->argc);
 		int i;
 		for(i = 0; i < info->argc; i++){
 			void* ptr = NULL;
@@ -113,8 +113,8 @@ struct sn_generic* ffi_function_handler(struct sn_interpreter* sn, int args, str
 
 			info->ptr = gens[1]->ptr;
 			info->argc = args - 3;
-			info->args = malloc(sizeof(ffi_type*) * (args - 3));
-			info->argtypes = malloc(sizeof(ffi_type*) * (args - 2));
+			info->args = malloc(sizeof(ffi_type*) * (args - 2));
+			info->argtypes = malloc(sizeof(char*) * (args - 2));
 
 			ffi_type* ret = &ffi_type_void;
 
