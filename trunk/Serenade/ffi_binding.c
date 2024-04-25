@@ -47,7 +47,7 @@ ffi_cif cif;
 struct ffi_info {
 	void* ptr;
 	ffi_cif cif;
-	ffi_type** argtypes;
+	ffi_type** args;
 };
 
 struct sn_generic* ffi_symbol_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
@@ -68,15 +68,34 @@ struct sn_generic* ffi_symbol_handler(struct sn_interpreter* sn, int args, struc
 	return gen;
 }
 
+struct sn_generic* function_caller_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	gen->type = SN_TYPE_VOID;
+	struct ffi_info* info = (struct ffi_info*)gens[0]->ptr;
+	printf("%x\n", info);
+	ffi_call(&info->cif, FFI_FN(info->ptr), NULL, NULL);
+	return gen;
+}
+
 struct sn_generic* ffi_function_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
 	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
 	gen->type = SN_TYPE_VOID;
-	if(args > 1){
-		if(gens[1]->type == SN_TYPE_PTR){
+	if(args > 1) {
+		if(gens[1]->type == SN_TYPE_PTR) {
 			struct ffi_info* info = malloc(sizeof(struct ffi_info));
 			int i;
-			for(i = 2; i < args; i++){
+			gen->type = SN_TYPE_FUNCTION;
+			gen->handler = function_caller_handler;
+			gen->name = NULL;
+
+			info->ptr = gens[1]->ptr;
+			info->args = malloc(sizeof(ffi_type*) * (args - 2));
+
+			for(i = 2; i < args; i++) {
 			}
+
+			ffi_prep_cif(&info->cif, FFI_DEFAULT_ABI, args - 2, &ffi_type_void, info->args);
+			gen->ptr = info;
 		}
 	}
 	return gen;

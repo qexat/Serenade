@@ -33,7 +33,11 @@
 
 #include <stdbool.h>
 
+#include "interpreter.h"
+
 enum types { SN_TYPE_DOUBLE = 0, SN_TYPE_STRING, SN_TYPE_TREE, SN_TYPE_PTR, SN_TYPE_FUNCTION, SN_TYPE_VOID, SN_TYPE_VARIABLE };
+
+struct sn_interpreter;
 
 struct sn_generic {
 	int type;
@@ -41,9 +45,11 @@ struct sn_generic {
 	char* string;
 	unsigned long long string_length;
 	void* ptr;
+	void* funcptr;
 	char* name;
 	struct sn_tree* tree;
 	bool used;
+	struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**);
 };
 
 struct sn_tree {

@@ -4,9 +4,9 @@
 #ifdef LIBS
 #ifdef HAS_FFI_SUPPORT
 -lffi
+#endif
 #ifdef __linux__
 -ldl
-#endif
 #endif
 #endif
 

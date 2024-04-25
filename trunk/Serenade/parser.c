@@ -62,6 +62,8 @@ struct sn_generic* sn_generic_dup(struct sn_generic* g) {
 	} else if(r->type == SN_TYPE_FUNCTION) {
 		r->name = sn_strdup(g->name);
 	}
+	r->ptr = g->ptr;
+
 	return r;
 }
 
