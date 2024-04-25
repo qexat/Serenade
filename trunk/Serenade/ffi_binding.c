@@ -30,6 +30,7 @@
 
 #include "ffi_binding.h"
 
+#include "util.h"
 #include "parser.h"
 
 #include <stdlib.h>
@@ -46,6 +47,8 @@ ffi_cif cif;
 
 struct ffi_info {
 	void* ptr;
+	int argc;
+	char** argtypes;
 	ffi_cif cif;
 	ffi_type** args;
 };
@@ -72,16 +75,36 @@ struct sn_generic* function_caller_handler(struct sn_interpreter* sn, int args, 
 	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
 	gen->type = SN_TYPE_VOID;
 	struct ffi_info* info = (struct ffi_info*)gens[0]->ptr;
-	printf("%x\n", info);
-	ffi_call(&info->cif, FFI_FN(info->ptr), NULL, NULL);
+	void** fargs = NULL;
+	if(info->argc > 0){
+		fargs = malloc(sizeof(void*) * info->argc);
+		int i;
+		for(i = 0; i < info->argc; i++){
+			void* ptr = NULL;
+			if(strcmp(info->argtypes[i + 1], "integer") == 0){
+				int* data = malloc(sizeof(int));
+				*data = gens[i + 1]->number;
+				ptr = data;
+			}else if(strcmp(info->argtypes[i + 1], "string") == 0){
+				char** data = malloc(sizeof(char*));
+				*data = malloc(gens[i + 1]->string_length + 1);
+				memcpy(*data, gens[i + 1]->string, gens[i + 1]->string_length);
+				(*data)[gens[i + 1]->string_length] = 0;
+				ptr = data;
+			}
+			fargs[i] = ptr;
+		}
+	}
+	ffi_call(&info->cif, FFI_FN(info->ptr), NULL, fargs);
+	if(fargs != NULL) free(fargs);
 	return gen;
 }
 
 struct sn_generic* ffi_function_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
 	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
 	gen->type = SN_TYPE_VOID;
-	if(args > 1) {
-		if(gens[1]->type == SN_TYPE_PTR) {
+	if(args > 2) {
+		if(gens[1]->type == SN_TYPE_PTR && gens[2]->type == SN_TYPE_STRING) {
 			struct ffi_info* info = malloc(sizeof(struct ffi_info));
 			int i;
 			gen->type = SN_TYPE_FUNCTION;
@@ -89,12 +112,38 @@ struct sn_generic* ffi_function_handler(struct sn_interpreter* sn, int args, str
 			gen->name = NULL;
 
 			info->ptr = gens[1]->ptr;
-			info->args = malloc(sizeof(ffi_type*) * (args - 2));
+			info->argc = args - 3;
+			info->args = malloc(sizeof(ffi_type*) * (args - 3));
+			info->argtypes = malloc(sizeof(ffi_type*) * (args - 2));
+
+			ffi_type* ret = &ffi_type_void;
 
 			for(i = 2; i < args; i++) {
+				ffi_type* assign = &ffi_type_void;
+				char* typ = malloc(gens[i]->string_length + 1);
+				typ[gens[i]->string_length] = 0;
+				memcpy(typ, gens[i]->string, gens[i]->string_length);
+	
+				if(strcmp(typ, "void") == 0){
+					assign = &ffi_type_void;
+				}else if(strcmp(typ, "pointer") == 0){
+					assign = &ffi_type_pointer;
+				}else if(strcmp(typ, "int") == 0){
+					assign = &ffi_type_sint;
+				}else if(strcmp(typ, "string") == 0){
+					assign = &ffi_type_pointer;
+				}
+
+				info->argtypes[i - 2] = typ;
+
+				if(i == 2){
+					ret = assign;
+				}else{
+					info->args[i - 3] = assign;
+				}
 			}
 
-			ffi_prep_cif(&info->cif, FFI_DEFAULT_ABI, args - 2, &ffi_type_void, info->args);
+			ffi_prep_cif(&info->cif, FFI_DEFAULT_ABI, args - 3, ret, info->args);
 			gen->ptr = info;
 		}
 	}

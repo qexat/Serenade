@@ -173,7 +173,6 @@ void sn_set_variable(struct sn_interpreter* sn, const char* name, struct sn_gene
 		sn->variables[i]->key = sn_strdup(name);
 		sn->variables[i]->value = gen;
 		sn->variables[i]->handler = NULL;
-		printf("%s %x\n", name, gen->ptr);
 		if(gen->type == SN_TYPE_FUNCTION) sn->variables[i]->handler = gen->handler;
 		sn->variables[i + 1] = NULL;
 	}
