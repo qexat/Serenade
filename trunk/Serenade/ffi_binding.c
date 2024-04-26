@@ -37,6 +37,7 @@
 #include <string.h>
 
 #ifdef __MINGW32__
+#include <libloaderapi.h>
 #else
 #include <dlfcn.h>
 #endif
@@ -61,7 +62,11 @@ struct sn_generic* ffi_symbol_handler(struct sn_interpreter* sn, int args, struc
 		char* sym = malloc(gens[2]->string_length + 1);
 		memcpy(sym, gens[2]->string, gens[2]->string_length);
 		sym[gens[2]->string_length] = 0;
+#ifdef __MINGW32__
+		ptr = GetProcAddress(gens[1]->ptr, sym);
+#else
 		ptr = dlsym(gens[1]->ptr, sym);
+#endif
 		free(sym);
 	}
 	if(ptr != NULL) {
@@ -164,7 +169,11 @@ struct sn_generic* ffi_load_handler(struct sn_interpreter* sn, int args, struct 
 		char* path = malloc(gens[1]->string_length + 1);
 		memcpy(path, gens[1]->string, gens[1]->string_length);
 		path[gens[1]->string_length] = 0;
+#ifdef __MINGW32__
+		lib = LoadLibraryA(path);
+#else
 		lib = dlopen(path, RTLD_LAZY);
+#endif
 		free(path);
 	}
 	if(lib != NULL) {
