@@ -79,9 +79,7 @@ struct sn_generic* print_handler(struct sn_interpreter* sn, int args, struct sn_
 		fflush(stdout);
 	}
 	printf("\n");
-	gen->type = SN_TYPE_FUNCTION;
-	gen->name = sn_strdup("print");
-	gen->handler = NULL;
+	gen->type = SN_TYPE_VOID;
 	return gen;
 }
 
