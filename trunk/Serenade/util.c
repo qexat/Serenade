@@ -58,7 +58,7 @@ void sn_print_to(FILE* f, struct sn_generic* gen) {
 		fprintf(f, "<void>");
 	} else if(gen->type == SN_TYPE_FUNCTION) {
 		fprintf(f, "<function %s", gen->name == NULL ? "(anonymous)" : gen->name);
-		if(gen->name == NULL){
+		if(gen->name == NULL) {
 			fprintf(f, ":%x>", gen->handler);
 		}
 	} else if(gen->type == SN_TYPE_PTR) {
