@@ -30,8 +30,8 @@
 
 #include "ffi_binding.h"
 
-#include "util.h"
 #include "parser.h"
+#include "util.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -76,26 +76,32 @@ struct sn_generic* function_caller_handler(struct sn_interpreter* sn, int args, 
 	gen->type = SN_TYPE_VOID;
 	struct ffi_info* info = (struct ffi_info*)gens[0]->ptr;
 	void** fargs = malloc(sizeof(void*) * (info->argc));
-	if(info->argc > 0){
+	if(info->argc > 0) {
 		int i;
-		for(i = 0; i < info->argc; i++){
+		for(i = 0; i < info->argc; i++) {
 			void* ptr = NULL;
-			if(strcmp(info->argtypes[i + 1], "integer") == 0){
+			if(strcmp(info->argtypes[i + 1], "integer") == 0) {
 				int* data = malloc(sizeof(int));
 				*data = gens[i + 1]->number;
 				ptr = data;
-			}else if(strcmp(info->argtypes[i + 1], "string") == 0){
+			} else if(strcmp(info->argtypes[i + 1], "string") == 0) {
 				char** data = malloc(sizeof(char*));
 				*data = malloc(gens[i + 1]->string_length + 1);
 				memcpy(*data, gens[i + 1]->string, gens[i + 1]->string_length);
 				(*data)[gens[i + 1]->string_length] = 0;
 				ptr = data;
+			} else if(strcmp(info->argtypes[i + 1], "pointer") == 0) {
+				ptr = &gens[i + 1]->ptr;
 			}
 			fargs[i] = ptr;
 		}
 	}
 	void* result;
 	ffi_call(&info->cif, FFI_FN(info->ptr), &result, fargs);
+	if(strcmp(info->argtypes[0], "pointer") == 0) {
+		gen->type = SN_TYPE_PTR;
+		gen->ptr = result;
+	}
 	if(fargs != NULL) free(fargs);
 	return gen;
 }
@@ -123,22 +129,22 @@ struct sn_generic* ffi_function_handler(struct sn_interpreter* sn, int args, str
 				char* typ = malloc(gens[i]->string_length + 1);
 				typ[gens[i]->string_length] = 0;
 				memcpy(typ, gens[i]->string, gens[i]->string_length);
-	
-				if(strcmp(typ, "void") == 0){
+
+				if(strcmp(typ, "void") == 0) {
 					assign = &ffi_type_void;
-				}else if(strcmp(typ, "pointer") == 0){
+				} else if(strcmp(typ, "pointer") == 0) {
 					assign = &ffi_type_pointer;
-				}else if(strcmp(typ, "int") == 0){
+				} else if(strcmp(typ, "integer") == 0) {
 					assign = &ffi_type_sint;
-				}else if(strcmp(typ, "string") == 0){
+				} else if(strcmp(typ, "string") == 0) {
 					assign = &ffi_type_pointer;
 				}
 
 				info->argtypes[i - 2] = typ;
 
-				if(i == 2){
+				if(i == 2) {
 					ret = assign;
-				}else{
+				} else {
 					info->args[i - 3] = assign;
 				}
 			}
