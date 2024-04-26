@@ -119,13 +119,7 @@ struct sn_generic* eval_handler(struct sn_interpreter* sn, int args, struct sn_g
 	return gen;
 }
 
-struct sn_interpreter* sn_create_interpreter(void) {
-	struct sn_interpreter* sn = malloc(sizeof(struct sn_interpreter));
-	sn->variables = malloc(sizeof(struct sn_interpreter_kv*));
-	sn->variables[0] = NULL;
-	sn->generics = malloc(sizeof(struct sn_generic**));
-	sn->generics[0] = NULL;
-
+void sn_stdlib_init(struct sn_interpreter* sn) {
 	sn_set_handler(sn, "+", math_handler);
 	sn_set_handler(sn, "-", math_handler);
 	sn_set_handler(sn, "*", math_handler);
@@ -133,9 +127,20 @@ struct sn_interpreter* sn_create_interpreter(void) {
 	sn_set_handler(sn, "print", print_handler);
 	sn_set_handler(sn, "eval", eval_handler);
 	sn_set_handler(sn, "define-var", defvar_handler);
+}
+
+void sn_ffi_init(struct sn_interpreter* sn) {
 #ifdef HAS_FFI_SUPPORT
 	ffi_init(sn);
 #endif
+}
+
+struct sn_interpreter* sn_create_interpreter(void) {
+	struct sn_interpreter* sn = malloc(sizeof(struct sn_interpreter));
+	sn->variables = malloc(sizeof(struct sn_interpreter_kv*));
+	sn->variables[0] = NULL;
+	sn->generics = malloc(sizeof(struct sn_generic**));
+	sn->generics[0] = NULL;
 
 	return sn;
 }
