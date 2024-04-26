@@ -1,8 +1,18 @@
+/* $Id$ */
 #define COMMANDLINE
 #include "config.h"
 
+#ifdef CFLAGS
+#ifdef __NetBSD__
+-I/usr/pkg/include
+#endif
+#endif
+
 #ifdef LIBS
 #ifdef HAS_FFI_SUPPORT
+#ifdef __NetBSD__
+-Wl,-R/usr/pkg/lib -L/usr/pkg/lib
+#endif
 -lffi
 #endif
 #ifdef __linux__
