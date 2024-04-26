@@ -84,7 +84,18 @@ int main(int argc, char** argv) {
 #ifdef HAS_REPL_SUPPORT
 	if(!loaded) {
 		is_repl = true;
-		printf("Welcome to Serenade LISP %s\n", SERENADE_VERSION);
+		printf("  ---+-------+---    ooooo \n");
+		printf("  ---+-------+---   8      \n");
+		printf("     |       |      8      \n");
+		printf("     |       |       ooooo  8\n");
+		printf("     |       |            8 8\n");
+		printf("     |       |            8 8\n");
+		printf("     |       |       ooooo   oo\n");
+		printf("\n");
+		printf("Welcome to Serenade LISP %s <http://nishi.boats/serenade>\n", SERENADE_VERSION);
+		printf("\n");
+		printf("Copyright (c) Nishi 2024\n");
+		printf("\n");
 		printf("Support: %s\n", SUPPORT);
 		printf("Parser stack size: %d\n", PARSER_STACK_SIZE);
 		struct sn_interpreter* sn = sn_create_interpreter();
