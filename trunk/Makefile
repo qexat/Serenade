@@ -1,10 +1,11 @@
 # $Id$
 
+CPP = cpp
 CC = cc
 CFLAGS = -std=c99 -g
 LDFLAGS =
-LIBS = `cpp -DLIBS cmdline | grep -vE "^\#" | tr '\\n' ' '`
-EXTRA_OBJS = `cpp -DOBJS cmdline | grep -vE "^\#" | tr '\\n' ' '`
+LIBS = `$(CPP) -DLIBS cmdline | grep -vE "^\#" | tr '\\n' ' '`
+EXTRA_OBJS = `$(CPP) -DOBJS cmdline | grep -vE "^\#" | tr '\\n' ' '`
 SUFFIX =
 
 .if "$(PLATFORM)" != ""
