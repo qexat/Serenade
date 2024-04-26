@@ -9,16 +9,17 @@
 #endif
 
 #ifdef LIBS
-#ifdef HAS_FFI_SUPPORT
 #ifdef __NetBSD__
 -Wl,-R/usr/pkg/lib -L/usr/pkg/lib
 #endif
+#ifdef HAS_FFI_SUPPORT
 -lffi
 #endif
-#ifdef __linux__
-#ifndef __MINGW32__
--ldl
+#ifdef HAS_READLINE_SUPPORT
+-lreadline
 #endif
+#ifdef __linux__
+-ldl
 #endif
 #endif
 
