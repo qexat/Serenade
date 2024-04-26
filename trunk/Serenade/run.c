@@ -62,7 +62,7 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 			for(j = 0; gen->tree->args[j]; j++) {
 				args[j] = _sn_run(sn, gen->tree->args[j]);
 			}
-			if(args[0]->handler != NULL) {
+			if(0) {
 				free(r);
 				r = args[0]->handler(sn, argc, args);
 				called = true;
