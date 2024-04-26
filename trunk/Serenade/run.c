@@ -30,6 +30,7 @@
 
 #include "run.h"
 
+#include "serenade.h"
 #include "util.h"
 
 #include <stdbool.h>
@@ -53,6 +54,12 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 			free(r);
 			return NULL;
 		} else {
+			if(strcmp(op->name, "serenade-version") == 0) {
+				r->type = SN_TYPE_STRING;
+				r->string = sn_strdup(SERENADE_VERSION);
+				r->string_length = strlen(r->string);
+				return r;
+			}
 			bool called = false;
 			int j;
 			for(j = 0; gen->tree->args[j]; j++)
@@ -122,8 +129,14 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 	return NULL;
 }
 
+bool is_repl = false;
+
 int sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 	struct sn_generic* rgen = _sn_run(sn, gen);
 	if(rgen == NULL) return 1;
+	if(is_repl) {
+		sn_print_to(stdout, rgen);
+		printf("\n");
+	}
 	return 0;
 }

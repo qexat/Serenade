@@ -41,6 +41,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
+extern bool is_repl;
+
 int main(int argc, char** argv) {
 	int i;
 	bool loaded = false;
@@ -81,6 +83,7 @@ int main(int argc, char** argv) {
 	}
 #ifdef HAS_REPL_SUPPORT
 	if(!loaded) {
+		is_repl = true;
 		printf("Welcome to Serenade LISP %s\n", SERENADE_VERSION);
 		printf("Support: %s\n", SUPPORT);
 		printf("Parser stack size: %d\n", PARSER_STACK_SIZE);
