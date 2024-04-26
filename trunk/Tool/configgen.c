@@ -37,7 +37,7 @@ char choice[256];
 
 char* asks[] = {"repl", "y", "HAS_REPL_SUPPORT", "Do you want the REPL support?",
 
-		"ffi",	"n", "HAS_FFI_SUPPORT",	 "Do you want the FFI support?",
+		"ffi",	"y", "HAS_FFI_SUPPORT",	 "Do you want the FFI support?",
 
 		NULL};
 
