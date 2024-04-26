@@ -6,7 +6,9 @@
 -lffi
 #endif
 #ifdef __linux__
+#ifndef __MINGW32__
 -ldl
+#endif
 #endif
 #endif
 

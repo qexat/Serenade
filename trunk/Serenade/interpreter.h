@@ -35,6 +35,7 @@
 
 struct sn_interpreter {
 	struct sn_interpreter_kv** variables;
+	struct sn_generic*** generics;
 };
 
 struct sn_interpreter_kv {

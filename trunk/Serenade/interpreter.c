@@ -125,6 +125,8 @@ struct sn_interpreter* sn_create_interpreter(void) {
 	struct sn_interpreter* sn = malloc(sizeof(struct sn_interpreter));
 	sn->variables = malloc(sizeof(struct sn_interpreter_kv*));
 	sn->variables[0] = NULL;
+	sn->generics = malloc(sizeof(struct sn_generic**));
+	sn->generics[0] = NULL;
 
 	sn_set_handler(sn, "+", math_handler);
 	sn_set_handler(sn, "-", math_handler);
@@ -148,6 +150,12 @@ void sn_interpreter_free(struct sn_interpreter* sn) {
 		free(sn->variables[i]);
 	}
 	free(sn->variables);
+	for(i = 0; sn->generics[i] != NULL; i++){
+		int j;
+		for(j = 0; sn->generics[i][j] != NULL; j++) sn_generic_free(sn->generics[i][j]); 
+		free(sn->generics[i]);
+	}
+	free(sn->generics);
 	free(sn);
 }
 
@@ -216,8 +224,16 @@ int sn_eval(struct sn_interpreter* sn, char* data, unsigned long long len) {
 				}
 			}
 		}
-		for(i = 0; gens[i] != NULL; i++) sn_generic_free(gens[i]);
-		free(gens);
+		int j;
+		struct sn_generic*** oldgens = sn->generics;
+		for(j = 0; oldgens[j] != NULL; j++);
+		sn->generics = malloc(sizeof(struct sn_generic**) * (j + 2));
+		for(j = 0; oldgens[j] != NULL; j++){
+			sn->generics[j] = oldgens[j];
+		}
+		sn->generics[j] = gens;
+		sn->generics[j + 1] = NULL;
+		free(oldgens);
 	}
 	return r;
 }

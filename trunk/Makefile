@@ -2,6 +2,7 @@
 
 CPP = cpp
 CC = cc
+CPP = cpp
 CFLAGS = -std=c99 -g
 LDFLAGS =
 LIBS = `$(CPP) -DLIBS cmdline | grep -vE "^\#" | tr '\\n' ' '`
