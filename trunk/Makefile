@@ -2,16 +2,16 @@
 
 CPP = cpp
 CC = cc
-CFLAGS = -std=c99 -g `$(CPP) -DCFLAGS cmdline | grep -vE "^\#" | tr '\\n' ' '`
+CFLAGS = -std=c99 -fPIC -g `$(CPP) -DCFLAGS cmdline | grep -vE "^\#" | tr '\\n' ' '`
 LDFLAGS =
 LIBS = `$(CPP) -DLIBS cmdline | grep -vE "^\#" | tr '\\n' ' '`
 EXTRA_OBJS = `$(CPP) -DOBJS cmdline | grep -vE "^\#" | tr '\\n' ' '`
 SUFFIX =
+SUFFIX_SO = .so
+PREFIX_SO = lib
 
 .if "$(PLATFORM)" != ""
 .include "platforms/${PLATFORM}.mk"
-.else
-.include "platform.mk"
 .endif
 
 .PHONY: all ./Serenade ./Tool replace format
@@ -26,7 +26,7 @@ all: ./Tool ./config.h ./Serenade
 	./Tool/configgen $@
 
 ./Serenade::
-	$(MAKE) -C ./Serenade CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)" EXTRA_OBJS="$(EXTRA_OBJS)"
+	$(MAKE) -C ./Serenade CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)" EXTRA_OBJS="$(EXTRA_OBJS)" SUFFIX_SO="$(SUFFIX_SO)" PREFIX_SO="$(PREFIX_SO)"
 
 clean:
 	$(MAKE) -C ./Tool clean
