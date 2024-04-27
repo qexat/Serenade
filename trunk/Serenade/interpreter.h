@@ -37,6 +37,7 @@ struct sn_interpreter {
 	struct sn_interpreter_kv** variables;
 	struct sn_interpreter_kv** local_variables;
 	struct sn_generic*** generics;
+	int callstack;
 };
 
 struct sn_interpreter_kv {

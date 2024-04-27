@@ -170,8 +170,10 @@ struct sn_interpreter* sn_create_interpreter(void) {
 	struct sn_interpreter* sn = malloc(sizeof(struct sn_interpreter));
 	sn->variables = malloc(sizeof(struct sn_interpreter_kv*));
 	sn->variables[0] = NULL;
+	sn->local_variables = NULL;
 	sn->generics = malloc(sizeof(struct sn_generic**));
 	sn->generics[0] = NULL;
+	sn->callstack = 0;
 
 	return sn;
 }

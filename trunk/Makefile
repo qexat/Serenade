@@ -30,7 +30,7 @@ all: ./Tool ./config.h ./Serenade
 
 clean:
 	$(MAKE) -C ./Tool clean
-	$(MAKE) -C ./Serenade clean
+	$(MAKE) -C ./Serenade clean SUFFIX_SO="$(SUFFIX_SO)" PREFIX_SO="$(PREFIX_SO)"
 	rm -f config.h
 
 FILES = `find . -name "*.c" -or -name "*.h"`

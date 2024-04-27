@@ -48,10 +48,12 @@ struct sn_generic* run_code(struct sn_interpreter* sn, int argc, struct sn_gener
 	int i;
 	struct sn_interpreter_kv** old_kv = sn->local_variables;
 	sn->local_variables = malloc(sizeof(struct sn_interpreter_kv*));
-	sn->local_variables[i] = NULL;
+	sn->local_variables[0] = NULL;
+	sn->callstack++;
 	for(i = 0; gens[i] != NULL; i++) {
 		_sn_run(sn, gens[i]);
 	}
+	sn->callstack--;
 	free(sn->local_variables);
 	sn->local_variables = old_kv;
 	return r;
