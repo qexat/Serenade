@@ -1,0 +1,19 @@
+; vim: syntax=lisp
+; $Id$
+(define-variable "tcl" (ffi-load "libtcl.so"))
+(define-variable "tk" (ffi-load "libtk.so"))
+(define-variable "Tcl_CreateInterp" (ffi-function (ffi-symbol tcl "Tcl_CreateInterp") "pointer"))
+(define-variable "Tcl_Init" (ffi-function (ffi-symbol tcl "Tcl_Init") "void" "pointer"))
+(define-variable "Tk_Init" (ffi-function (ffi-symbol tk "Tk_Init") "void" "pointer"))
+(define-variable "Tk_MainLoop" (ffi-function (ffi-symbol tk "Tk_MainLoop") "void"))
+(define-variable "Tcl_FindExecutable" (ffi-function (ffi-symbol tcl "Tcl_FindExecutable") "void" "string"))
+(define-variable "Tcl_EvalFile" (ffi-function (ffi-symbol tcl "Tcl_EvalFile") "void" "pointer" "string"))
+(define-variable "Tcl_SetVar" (ffi-function (ffi-symbol tcl "Tcl_SetVar") "void" "pointer" "string" "string" "integer"))
+
+(Tcl_FindExecutable "serenade")
+(define-variable "interp" (Tcl_CreateInterp))
+(Tcl_Init interp)
+(Tk_Init interp)
+(Tcl_SetVar interp "serenade_version" (serenade-version) 0)
+(Tcl_EvalFile interp "main.tcl")
+(Tk_MainLoop)
