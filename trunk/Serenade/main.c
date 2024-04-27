@@ -116,13 +116,14 @@ int main(int argc, char** argv) {
 		int br = 0;
 #ifdef HAS_READLINE_SUPPORT
 		char* line = NULL;
+		using_history();
 #endif
 		while(1) {
 #ifdef HAS_READLINE_SUPPORT
 			line = readline("> ");
 			if(line == NULL){
 				free(line);
-				continue;
+				break;
 			}
 			int i;
 			for(i = 0; line[i] != 0; i++){
