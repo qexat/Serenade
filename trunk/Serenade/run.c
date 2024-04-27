@@ -77,7 +77,7 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 				r->string = sn_strdup(SERENADE_VERSION);
 				r->string_length = strlen(r->string);
 				return r;
-			} else if(strcmp(op->name, "define-func") == 0) {
+			} else if(strcmp(op->name, "define-subroutine") == 0) {
 				char* name = malloc(gen->tree->args[1]->string_length + 1);
 				memcpy(name, gen->tree->args[1]->string, gen->tree->args[1]->string_length);
 				name[gen->tree->args[1]->string_length] = 0;

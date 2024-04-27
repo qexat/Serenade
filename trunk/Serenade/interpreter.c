@@ -152,7 +152,7 @@ void sn_stdlib_init(struct sn_interpreter* sn) {
 	sn_set_handler(sn, "/", math_handler);
 	sn_set_handler(sn, "print", print_handler);
 	sn_set_handler(sn, "eval", eval_handler);
-	sn_set_handler(sn, "define-var", defvar_handler);
+	sn_set_handler(sn, "define-variable", defvar_handler);
 	sn_set_handler(sn, "source", source_handler);
 }
 
