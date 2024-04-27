@@ -52,6 +52,7 @@ struct sn_generic* run_code(struct sn_interpreter* sn, int argc, struct sn_gener
 	for(i = 0; gens[i] != NULL; i++) {
 		_sn_run(sn, gens[i]);
 	}
+	free(sn->local_variables);
 	sn->local_variables = old_kv;
 	return r;
 }
