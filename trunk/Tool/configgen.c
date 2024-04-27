@@ -47,6 +47,9 @@ void macro_print(FILE* out) {
 	fprintf(out, "#ifdef HAS_FFI_SUPPORT\n");
 	fprintf(out, "#include \"Serenade/ffi_binding.h\"\n");
 	fprintf(out, "#endif\n");
+	fprintf(out, "#ifdef HAS_BINMODULE_SUPPORT\n");
+	fprintf(out, "#include \"Serenade/binmodule.h\"\n");
+	fprintf(out, "#endif\n");
 	fprintf(out, "#endif\n");
 }
 

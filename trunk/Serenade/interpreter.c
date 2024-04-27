@@ -31,6 +31,7 @@
 #include "interpreter.h"
 
 #include "../config.h"
+
 #include "run.h"
 #include "util.h"
 
@@ -156,9 +157,12 @@ void sn_stdlib_init(struct sn_interpreter* sn) {
 	sn_set_handler(sn, "source", source_handler);
 }
 
-void sn_ffi_init(struct sn_interpreter* sn) {
+void sn_module_init(struct sn_interpreter* sn) {
 #ifdef HAS_FFI_SUPPORT
 	ffi_init(sn);
+#endif
+#ifdef HAS_BINMODULE_SUPPORT
+	binmodule_init(sn);
 #endif
 }
 

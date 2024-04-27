@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
 				fread(str, 1, s.st_size, f);
 				struct sn_interpreter* sn = sn_create_interpreter();
 				sn_stdlib_init(sn);
-				sn_ffi_init(sn);
+				sn_module_init(sn);
 				int r = sn_eval(sn, str, s.st_size);
 				sn_interpreter_free(sn);
 				free(str);
@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
 		printf("Parser stack size: %d\n", PARSER_STACK_SIZE);
 		struct sn_interpreter* sn = sn_create_interpreter();
 		sn_stdlib_init(sn);
-		sn_ffi_init(sn);
+		sn_module_init(sn);
 		char cbuf[2];
 		cbuf[0] = '\n';
 		cbuf[1] = 0;

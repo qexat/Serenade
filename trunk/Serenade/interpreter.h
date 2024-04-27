@@ -52,6 +52,6 @@ struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char*
 struct sn_interpreter_kv* sn_set_handler(struct sn_interpreter* sn, const char* name, struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**));
 int sn_eval(struct sn_interpreter* sn, char* data, unsigned long long len);
 void sn_stdlib_init(struct sn_interpreter* sn);
-void sn_ffi_init(struct sn_interpreter* sn);
+void sn_module_init(struct sn_interpreter* sn);
 
 #endif

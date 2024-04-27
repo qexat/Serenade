@@ -29,3 +29,6 @@
 /* --- END LICENSE --- */
 
 #include "binmodule.h"
+
+void binmodule_init(struct sn_interpreter* sn){
+}
