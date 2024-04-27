@@ -30,5 +30,17 @@
 
 #include "binmodule.h"
 
+#include "interpreter.h"
+
+#ifdef __MINGW32__
+#include <libloaderapi.h>
+#else
+#include <dlfcn.h>
+#endif
+
 void binmodule_init(struct sn_interpreter* sn){
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	gen->type = SN_TYPE_DOUBLE;
+	gen->number = 1;
+	sn_set_variable(sn, "binmodule-loaded", gen);
 }
