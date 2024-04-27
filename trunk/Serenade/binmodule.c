@@ -31,6 +31,7 @@
 #include "binmodule.h"
 
 #include "interpreter.h"
+#include "util.h"
 
 #ifdef __MINGW32__
 #include <libloaderapi.h>
@@ -38,9 +39,63 @@
 #include <dlfcn.h>
 #endif
 
-void binmodule_init(struct sn_interpreter* sn){
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct sn_generic* binmodule_load_handler(struct sn_interpreter* sn, int argc, struct sn_generic** args) {
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	gen->type = SN_TYPE_DOUBLE;
+	gen->number = -1;
+	void* lib = NULL;
+	char* name = sn_strdup("module");
+	if((argc == 3 || argc == 2) && args[1]->type == SN_TYPE_STRING) {
+		if((argc == 3 ? (args[2]->type == SN_TYPE_STRING) : true)) {
+			char* path = malloc(args[1]->string_length + 1);
+			memcpy(path, args[1]->string, args[1]->string_length);
+			path[args[1]->string_length] = 0;
+#ifdef __MINGW32__
+			lib = LoadLibraryA(path);
+#else
+			lib = dlopen(path, RTLD_LAZY);
+#endif
+			free(path);
+			if(argc == 3) {
+				free(name);
+				name = malloc(args[2]->string_length + 1);
+				memcpy(name, args[2]->string, args[2]->string_length);
+				name[args[2]->string_length] = 0;
+			}
+		}
+	}
+	if(lib != NULL) {
+		struct sn_binmodule_config* conf = malloc(sizeof(struct sn_binmodule_config));
+		conf->interpreter = sn;
+		conf->set_variable = sn_set_variable;
+		conf->set_handler = sn_set_handler;
+		char* symbol_name = sn_strcat(name, "_init");
+		int (*loadfunc)(struct sn_binmodule_config*);
+#ifdef __MINGW32__
+		loadfunc = (int (*)(struct sn_binmodule_config*))GetProcAddress(lib, symbol_name);
+#else
+		loadfunc = (int (*)(struct sn_binmodule_config*))dlsym(lib, symbol_name);
+#endif
+		if(loadfunc == NULL) {
+			gen->number = -1;
+		} else {
+			gen->number = loadfunc(conf);
+		}
+		free(symbol_name);
+		free(conf);
+	}
+	free(name);
+	return gen;
+}
+
+void binmodule_init(struct sn_interpreter* sn) {
 	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
 	gen->type = SN_TYPE_DOUBLE;
 	gen->number = 1;
 	sn_set_variable(sn, "binmodule-loaded", gen);
+	sn_set_handler(sn, "binmodule-load", binmodule_load_handler);
 }

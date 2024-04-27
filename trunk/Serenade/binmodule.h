@@ -35,4 +35,10 @@
 
 void binmodule_init(struct sn_interpreter* sn);
 
+struct sn_binmodule_config {
+	struct sn_interpreter* interpreter;
+	struct sn_interpreter_kv* (*set_variable)(struct sn_interpreter* sn, const char* name, struct sn_generic* gen);
+	struct sn_interpreter_kv* (*set_handler)(struct sn_interpreter* sn, const char* name, struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**));
+};
+
 #endif
