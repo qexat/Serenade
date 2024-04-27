@@ -39,6 +39,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen);
+
+struct sn_generic* run_code(struct sn_interpreter* sn, int argc, struct sn_generic** args){
+	struct sn_generic* r = malloc(sizeof(struct sn_generic));
+	r->type = SN_TYPE_VOID;
+	struct sn_generic** gens = (struct sn_generic**)args[0]->argvalue;
+	int i;
+	for(i = 0; gens[i] != NULL; i++){
+		_sn_run(sn, gens[i]);
+	}
+	return r;
+}
+
 struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 	if(gen->type == SN_TYPE_TREE) {
 		struct sn_generic* op = gen->tree->args[0];
@@ -58,6 +71,14 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 				r->type = SN_TYPE_STRING;
 				r->string = sn_strdup(SERENADE_VERSION);
 				r->string_length = strlen(r->string);
+				return r;
+			}else if(strcmp(op->name, "define-func") == 0){
+				char* name = malloc(gen->tree->args[1]->string_length + 1);
+				memcpy(name, gen->tree->args[1]->string, gen->tree->args[1]->string_length);
+				name[gen->tree->args[1]->string_length] = 0;
+				struct sn_interpreter_kv* kv = sn_set_handler(sn, name, run_code);
+				kv->argvalue = gen->tree->args + 1;
+				free(name);
 				return r;
 			}
 			bool called = false;
@@ -82,6 +103,7 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 							if(sn->variables[j]->value != NULL) {
 								args[0] = sn->variables[j]->value;
 							}
+							args[0]->argvalue = sn->variables[j]->argvalue;
 							op_result = sn->variables[j]->handler(sn, argc, args);
 						} else {
 							struct sn_generic* build = malloc(sizeof(struct sn_generic));

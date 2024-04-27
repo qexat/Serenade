@@ -162,14 +162,14 @@ void sn_interpreter_free(struct sn_interpreter* sn) {
 	free(sn);
 }
 
-void sn_set_variable(struct sn_interpreter* sn, const char* name, struct sn_generic* gen) {
+struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char* name, struct sn_generic* gen) {
 	int i;
 	bool replaced = false;
 	for(i = 0; sn->variables[i] != NULL; i++) {
 		if(strcmp(sn->variables[i]->key, name) == 0) {
 			sn->variables[i]->value = gen;
 			replaced = true;
-			break;
+			return sn->variables[i];
 		}
 	}
 	if(!replaced) {
@@ -186,17 +186,18 @@ void sn_set_variable(struct sn_interpreter* sn, const char* name, struct sn_gene
 		sn->variables[i]->handler = NULL;
 		if(gen->type == SN_TYPE_FUNCTION) sn->variables[i]->handler = gen->handler;
 		sn->variables[i + 1] = NULL;
+		return sn->variables[i];
 	}
 }
 
-void sn_set_handler(struct sn_interpreter* sn, const char* name, struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**)) {
+struct sn_interpreter_kv* sn_set_handler(struct sn_interpreter* sn, const char* name, struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**)) {
 	int i;
 	bool replaced = false;
 	for(i = 0; sn->variables[i] != NULL; i++) {
 		if(strcmp(sn->variables[i]->key, name) == 0) {
 			sn->variables[i]->handler = handler;
 			replaced = true;
-			break;
+			return sn->variables[i];
 		}
 	}
 	if(!replaced) {
@@ -212,6 +213,7 @@ void sn_set_handler(struct sn_interpreter* sn, const char* name, struct sn_gener
 		sn->variables[i]->value = NULL;
 		sn->variables[i]->handler = handler;
 		sn->variables[i + 1] = NULL;
+		return sn->variables[i];
 	}
 }
 
@@ -222,6 +224,7 @@ int sn_eval(struct sn_interpreter* sn, char* data, unsigned long long len) {
 		int i;
 		for(i = 0; gens[i] != NULL; i++) {
 			if(r == 0) {
+				sn->local_variables = NULL;
 				if(sn_run(sn, gens[i]) != 0) {
 					r = 1;
 				}

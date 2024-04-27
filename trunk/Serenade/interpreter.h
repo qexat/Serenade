@@ -35,19 +35,21 @@
 
 struct sn_interpreter {
 	struct sn_interpreter_kv** variables;
+	struct sn_interpreter_kv** local_variables;
 	struct sn_generic*** generics;
 };
 
 struct sn_interpreter_kv {
 	char* key;
 	struct sn_generic* value;
+	void* argvalue;
 	struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**);
 };
 
 struct sn_interpreter* sn_create_interpreter(void);
 void sn_interpreter_free(struct sn_interpreter* sn);
-void sn_set_variable(struct sn_interpreter* sn, const char* name, struct sn_generic* gen);
-void sn_set_handler(struct sn_interpreter* sn, const char* name, struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**));
+struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char* name, struct sn_generic* gen);
+struct sn_interpreter_kv* sn_set_handler(struct sn_interpreter* sn, const char* name, struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**));
 int sn_eval(struct sn_interpreter* sn, char* data, unsigned long long len);
 void sn_stdlib_init(struct sn_interpreter* sn);
 void sn_ffi_init(struct sn_interpreter* sn);

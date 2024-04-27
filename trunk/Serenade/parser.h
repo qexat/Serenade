@@ -49,6 +49,7 @@ struct sn_generic {
 	char* name;
 	struct sn_tree* tree;
 	bool used;
+	void* argvalue;
 	struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**);
 };
 
