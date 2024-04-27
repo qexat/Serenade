@@ -41,6 +41,11 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#ifdef HAS_READLINE_SUPPORT
+#include <readline/readline.h>
+#include <readline/history.h>
+#endif
+
 extern bool is_repl;
 
 int main(int argc, char** argv) {
@@ -109,8 +114,44 @@ int main(int argc, char** argv) {
 		char* str = malloc(1);
 		str[0] = 0;
 		int br = 0;
+#ifdef HAS_READLINE_SUPPORT
+		char* line = NULL;
+#endif
 		while(1) {
+#ifdef HAS_READLINE_SUPPORT
+			line = readline("> ");
+			if(line == NULL){
+				free(line);
+				continue;
+			}
+			int i;
+			for(i = 0; line[i] != 0; i++){
+				if(line[i] == '('){
+					br++;
+				}else if(line[i] == ')'){
+					br--;
+				}
+			}
+			if(strcmp(line, ":quit") == 0){
+				free(line);
+				break;
+			}
+			char* tmp = str;
+			str = sn_strcat(tmp, line);
+			free(tmp);
+			if(br == 0){
+				sn_eval(sn, str, strlen(str));
+				add_history(str);
+				free(str);
+				str = malloc(1);
+				str[0] = 0;
+			}
+			free(line);
+#else
 			if(cbuf[0] == '\n') {
+				if(strcmp(str, ":quit") == 0){
+					break;
+				}
 				if(br == 0 && strlen(str) > 0) {
 					sn_eval(sn, str, strlen(str));
 					free(str);
@@ -137,6 +178,7 @@ int main(int argc, char** argv) {
 				str = sn_strcat(tmp, cbuf);
 				free(tmp);
 			}
+#endif
 		}
 		free(str);
 		sn_interpreter_free(sn);
