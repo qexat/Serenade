@@ -184,7 +184,7 @@ struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char*
 		sn->variables[i]->key = sn_strdup(name);
 		sn->variables[i]->value = gen;
 		sn->variables[i]->handler = NULL;
-		if(gen->type == SN_TYPE_FUNCTION) sn->variables[i]->handler = gen->handler;
+		if(gen != NULL && gen->type == SN_TYPE_FUNCTION) sn->variables[i]->handler = gen->handler;
 		sn->variables[i + 1] = NULL;
 		return sn->variables[i];
 	}
@@ -201,19 +201,9 @@ struct sn_interpreter_kv* sn_set_handler(struct sn_interpreter* sn, const char* 
 		}
 	}
 	if(!replaced) {
-		struct sn_interpreter_kv** oldvariables = sn->variables;
-		for(i = 0; oldvariables[i] != NULL; i++)
-			;
-		sn->variables = malloc(sizeof(struct sn_interpreter_kv*) * (i + 2));
-		for(i = 0; oldvariables[i] != NULL; i++) {
-			sn->variables[i] = oldvariables[i];
-		}
-		sn->variables[i] = malloc(sizeof(struct sn_generic));
-		sn->variables[i]->key = sn_strdup(name);
-		sn->variables[i]->value = NULL;
-		sn->variables[i]->handler = handler;
-		sn->variables[i + 1] = NULL;
-		return sn->variables[i];
+		struct sn_interpreter_kv* set = sn_set_variable(sn, name, NULL);
+		set->handler = handler;
+		return set;
 	}
 }
 
