@@ -48,6 +48,15 @@
 
 extern bool is_repl;
 
+int run_command(const char* cmd){
+	if(strcmp(cmd, ":quit") == 0){
+		return 1;
+	}else{
+		fprintf(stderr, "Unknown command\n");
+		return 0;
+	}
+}
+
 int main(int argc, char** argv) {
 	int i;
 	bool loaded = false;
@@ -134,9 +143,11 @@ int main(int argc, char** argv) {
 					br--;
 				}
 			}
-			if(strcmp(line, ":quit") == 0) {
+			if(line[0] == ':'){
+				int st = run_command(line);
 				free(line);
-				break;
+				if(st != 0) break;
+				continue;
 			}
 			char* tmp = str;
 			str = sn_strcat(tmp, line);
@@ -151,8 +162,13 @@ int main(int argc, char** argv) {
 			free(line);
 #else
 			if(cbuf[0] == '\n') {
-				if(strcmp(str, ":quit") == 0) {
-					break;
+				if(str[0] == ':'){
+					int st = run_command(str);
+					free(str);
+					str = malloc(1);
+					str[0] = 0;
+					if(st != 0) break;
+					continue;
 				}
 				if(br == 0 && strlen(str) > 0) {
 					sn_eval(sn, str, strlen(str));
@@ -182,7 +198,9 @@ int main(int argc, char** argv) {
 			}
 #endif
 		}
+#ifdef HAS_READLINE_SUPPORT
 		write_history(".serenade_history");
+#endif
 		free(str);
 		sn_interpreter_free(sn);
 	}
