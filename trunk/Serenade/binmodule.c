@@ -48,7 +48,7 @@ struct sn_generic* binmodule_load_handler(struct sn_interpreter* sn, int argc, s
 	gen->type = SN_TYPE_DOUBLE;
 	gen->number = -1;
 	void* lib = NULL;
-	char* name = sn_strdup("module");
+	char* name = sn_strdup("binmodule");
 	if((argc == 3 || argc == 2) && args[1]->type == SN_TYPE_STRING) {
 		if((argc == 3 ? (args[2]->type == SN_TYPE_STRING) : true)) {
 			char* path = malloc(args[1]->string_length + 1);
@@ -92,7 +92,7 @@ struct sn_generic* binmodule_load_handler(struct sn_interpreter* sn, int argc, s
 	return gen;
 }
 
-void binmodule_init(struct sn_interpreter* sn) {
+void sn_binmodule_init(struct sn_interpreter* sn) {
 	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
 	gen->type = SN_TYPE_DOUBLE;
 	gen->number = 1;

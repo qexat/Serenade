@@ -227,7 +227,7 @@ struct sn_generic* ffi_load_handler(struct sn_interpreter* sn, int args, struct 
 	return gen;
 }
 
-void ffi_init(struct sn_interpreter* sn) {
+void sn_ffi_init(struct sn_interpreter* sn) {
 	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
 	gen->type = SN_TYPE_DOUBLE;
 	gen->number = 1;

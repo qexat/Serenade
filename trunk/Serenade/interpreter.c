@@ -159,10 +159,10 @@ void sn_stdlib_init(struct sn_interpreter* sn) {
 
 void sn_module_init(struct sn_interpreter* sn) {
 #ifdef HAS_FFI_SUPPORT
-	ffi_init(sn);
+	sn_ffi_init(sn);
 #endif
 #ifdef HAS_BINMODULE_SUPPORT
-	binmodule_init(sn);
+	sn_binmodule_init(sn);
 #endif
 }
 

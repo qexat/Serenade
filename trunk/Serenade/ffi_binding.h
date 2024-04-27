@@ -33,6 +33,6 @@
 
 #include "interpreter.h"
 
-void ffi_init(struct sn_interpreter* sn);
+void sn_ffi_init(struct sn_interpreter* sn);
 
 #endif

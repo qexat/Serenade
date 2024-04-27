@@ -33,7 +33,7 @@
 
 #include "interpreter.h"
 
-void binmodule_init(struct sn_interpreter* sn);
+void sn_binmodule_init(struct sn_interpreter* sn);
 
 struct sn_binmodule_config {
 	struct sn_interpreter* interpreter;
