@@ -18,13 +18,18 @@
 #ifdef HAS_READLINE_SUPPORT
 -lreadline
 #endif
+#if defined(HAS_FFI_SUPPORT) || defined(HAS_BINMODULE_SUPPORT)
 #ifdef __linux__
 -ldl
+#endif
 #endif
 #endif
 
 #ifdef OBJS
 #ifdef HAS_FFI_SUPPORT
 ffi_binding.o
+#endif
+#ifdef HAS_BINMODULE_SUPPORT
+binmodule.o
 #endif
 #endif
