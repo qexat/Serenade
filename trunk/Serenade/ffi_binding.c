@@ -136,13 +136,16 @@ struct sn_generic* function_caller_handler(struct sn_interpreter* sn, int args, 
 		gen->string_length = strlen(gen->string);
 	}
 
-	for(i = 0; fargs[i] != NULL; i++) {
-		if(strcmp(info->argtypes[i + 1], "string") == 0) {
-			free(*((void**)fargs[i]));
-			free(fargs[i]);
+	int i;
+	if(fargs != NULL){
+		for(i = 0; i < info->argc; i++) {
+			if(strcmp(info->argtypes[i + 1], "string") == 0) {
+				free(*((void**)fargs[i]));
+			}
+			if(strcmp(info->argtypes[i + 1], "pointer") != 0) free(fargs[i]);
 		}
+		free(fargs);
 	}
-	if(fargs != NULL) free(fargs);
 	return gen;
 }
 
