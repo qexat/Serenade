@@ -41,12 +41,12 @@
 
 struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen);
 
-struct sn_generic* run_code(struct sn_interpreter* sn, int argc, struct sn_generic** args){
+struct sn_generic* run_code(struct sn_interpreter* sn, int argc, struct sn_generic** args) {
 	struct sn_generic* r = malloc(sizeof(struct sn_generic));
 	r->type = SN_TYPE_VOID;
 	struct sn_generic** gens = (struct sn_generic**)args[0]->argvalue;
 	int i;
-	for(i = 0; gens[i] != NULL; i++){
+	for(i = 0; gens[i] != NULL; i++) {
 		_sn_run(sn, gens[i]);
 	}
 	return r;
@@ -72,7 +72,7 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 				r->string = sn_strdup(SERENADE_VERSION);
 				r->string_length = strlen(r->string);
 				return r;
-			}else if(strcmp(op->name, "define-func") == 0){
+			} else if(strcmp(op->name, "define-func") == 0) {
 				char* name = malloc(gen->tree->args[1]->string_length + 1);
 				memcpy(name, gen->tree->args[1]->string, gen->tree->args[1]->string_length);
 				name[gen->tree->args[1]->string_length] = 0;

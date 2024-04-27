@@ -38,6 +38,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 struct sn_generic* math_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
 	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
@@ -119,6 +120,31 @@ struct sn_generic* eval_handler(struct sn_interpreter* sn, int args, struct sn_g
 	return gen;
 }
 
+struct sn_generic* source_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
+	int i;
+	struct sn_generic* r = malloc(sizeof(struct sn_generic));
+	r->type = SN_TYPE_VOID;
+	for(i = 1; i < args; i++) {
+		if(gens[i]->type == SN_TYPE_STRING) {
+			char* path = malloc(gens[i]->string_length + 1);
+			memcpy(path, gens[i]->string, gens[i]->string_length);
+			path[gens[i]->string_length] = 0;
+			FILE* f = fopen(path, "rb");
+			if(f != NULL) {
+				struct stat s;
+				if(stat(path, &s) == 0) {
+					char* data = malloc(s.st_size);
+					fread(data, 1, s.st_size, f);
+					sn_eval(sn, data, s.st_size);
+					fclose(f);
+				}
+			}
+			free(path);
+		}
+	}
+	return r;
+}
+
 void sn_stdlib_init(struct sn_interpreter* sn) {
 	sn_set_handler(sn, "+", math_handler);
 	sn_set_handler(sn, "-", math_handler);
@@ -127,6 +153,7 @@ void sn_stdlib_init(struct sn_interpreter* sn) {
 	sn_set_handler(sn, "print", print_handler);
 	sn_set_handler(sn, "eval", eval_handler);
 	sn_set_handler(sn, "define-var", defvar_handler);
+	sn_set_handler(sn, "source", source_handler);
 }
 
 void sn_ffi_init(struct sn_interpreter* sn) {

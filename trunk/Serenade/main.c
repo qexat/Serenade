@@ -48,10 +48,10 @@
 
 extern bool is_repl;
 
-int run_command(const char* cmd){
-	if(strcmp(cmd, ":quit") == 0){
+int run_command(const char* cmd) {
+	if(strcmp(cmd, ":quit") == 0) {
 		return 1;
-	}else{
+	} else {
 		fprintf(stderr, "Unknown command\n");
 		return 0;
 	}
@@ -143,7 +143,7 @@ int main(int argc, char** argv) {
 					br--;
 				}
 			}
-			if(line[0] == ':'){
+			if(line[0] == ':') {
 				int st = run_command(line);
 				free(line);
 				if(st != 0) break;
@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
 			free(line);
 #else
 			if(cbuf[0] == '\n') {
-				if(str[0] == ':'){
+				if(str[0] == ':') {
 					int st = run_command(str);
 					free(str);
 					str = malloc(1);
