@@ -93,6 +93,10 @@ struct sn_generic* function_caller_handler(struct sn_interpreter* sn, int args, 
 				double* data = malloc(sizeof(double));
 				*data = gens[i + 1]->number;
 				ptr = data;
+			} else if(strcmp(info->argtypes[i + 1], "byte") == 0) {
+				char* data = malloc(sizeof(char));
+				*data = gens[i + 1]->number;
+				ptr = data;
 			} else if(strcmp(info->argtypes[i + 1], "string") == 0) {
 				char** data = malloc(sizeof(char*));
 				*data = malloc(gens[i + 1]->string_length + 1);
@@ -116,6 +120,9 @@ struct sn_generic* function_caller_handler(struct sn_interpreter* sn, int args, 
 	} else if(strcmp(info->argtypes[0], "integer") == 0) {
 		gen->type = SN_TYPE_DOUBLE;
 		gen->number = *(int*)&result;
+	} else if(strcmp(info->argtypes[0], "byte") == 0) {
+		gen->type = SN_TYPE_DOUBLE;
+		gen->number = *(char*)&result;
 	} else if(strcmp(info->argtypes[0], "string") == 0) {
 		gen->type = SN_TYPE_STRING;
 		gen->string = sn_strdup(*(char**)&result);
@@ -160,6 +167,8 @@ struct sn_generic* ffi_function_handler(struct sn_interpreter* sn, int args, str
 					assign = &ffi_type_double;
 				} else if(strcmp(typ, "string") == 0) {
 					assign = &ffi_type_pointer;
+				} else if(strcmp(typ, "byte") == 0) {
+					assign = &ffi_type_schar;
 				}
 
 				info->argtypes[i - 2] = typ;
