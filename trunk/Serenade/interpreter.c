@@ -180,18 +180,33 @@ struct sn_interpreter* sn_create_interpreter(void) {
 
 void sn_interpreter_free(struct sn_interpreter* sn) {
 	int i;
+	for(i = 0; sn->variables[i] != NULL; i++);
+	void** ptrs = malloc(sizeof(void*) * (i + 1));
 	for(i = 0; sn->variables[i] != NULL; i++) {
+		ptrs[i] = sn->variables[i]->value;
 		free(sn->variables[i]->key);
 		if(sn->variables[i]->value != NULL) sn_generic_free(sn->variables[i]->value);
 		free(sn->variables[i]);
 	}
+	ptrs[i] = NULL;
 	free(sn->variables);
 	for(i = 0; sn->generics[i] != NULL; i++) {
 		int j;
-		for(j = 0; sn->generics[i][j] != NULL; j++) sn_generic_free(sn->generics[i][j]);
+		for(j = 0; sn->generics[i][j] != NULL; j++){
+			int k;
+			bool found = false;
+			for(k = 0; ptrs[k] != NULL; k++){
+				if(ptrs[k] == sn->generics[i][j]){
+					found = true;
+					break;
+				}
+			}
+			if(!found) sn_generic_free(sn->generics[i][j]);
+		}
 		free(sn->generics[i]);
 	}
 	free(sn->generics);
+	free(ptrs);
 	free(sn);
 }
 
