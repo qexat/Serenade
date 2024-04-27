@@ -46,9 +46,13 @@ struct sn_generic* run_code(struct sn_interpreter* sn, int argc, struct sn_gener
 	r->type = SN_TYPE_VOID;
 	struct sn_generic** gens = (struct sn_generic**)args[0]->argvalue;
 	int i;
+	struct sn_interpreter_kv** old_kv = sn->local_variables;
+	sn->local_variables = malloc(sizeof(struct sn_interpreter_kv*));
+	sn->local_variables[i] = NULL;
 	for(i = 0; gens[i] != NULL; i++) {
 		_sn_run(sn, gens[i]);
 	}
+	sn->local_variables = old_kv;
 	return r;
 }
 

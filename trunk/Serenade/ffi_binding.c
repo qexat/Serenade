@@ -137,7 +137,7 @@ struct sn_generic* function_caller_handler(struct sn_interpreter* sn, int args, 
 	}
 
 	int i;
-	if(fargs != NULL){
+	if(fargs != NULL) {
 		for(i = 0; i < info->argc; i++) {
 			if(strcmp(info->argtypes[i + 1], "string") == 0) {
 				free(*((void**)fargs[i]));
