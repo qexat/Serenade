@@ -237,6 +237,7 @@ void sn_generic_free(struct sn_generic* g) {
 	} else if(g->type == SN_TYPE_FUNCTION || g->type == SN_TYPE_VARIABLE) {
 		free(g->name);
 	}
+	fprintf(stderr, "type %d free\n", g->type);
 	free(g);
 }
 
