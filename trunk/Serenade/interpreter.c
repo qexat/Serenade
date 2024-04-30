@@ -237,6 +237,7 @@ struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char*
 		}
 	}
 	for(i = 0; sn->variables[i] != NULL; i++) {
+		if(sn->variables[i]->value == NULL) continue;
 		if(strcmp(sn->variables[i]->key, name) == 0) {
 			sn->variables[i]->value = gen;
 			replaced = true;
