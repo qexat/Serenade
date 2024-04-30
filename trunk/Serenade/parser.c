@@ -289,6 +289,7 @@ void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
 			kvs = malloc(sizeof(struct sn_interpreter_kv*) * (count + 1));
 			count = 0;
 			for(j = 0; oldkvs[j] != NULL; j++){
+				if(oldkvs[j] == (void*)1) continue;
 				kvs[count] = oldkvs[j];
 				if(oldkvs[j]->value == g){
 					kvs[count]->value = NULL;
