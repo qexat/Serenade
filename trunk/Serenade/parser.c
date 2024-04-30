@@ -230,6 +230,9 @@ struct sn_generic** sn_parse(char* data, unsigned long long size) {
 }
 
 void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
+	printf("freed type %d \n:", g->type);
+	sn_print_to(stdout, g);
+	printf("\n");
 	if(g->type == SN_TYPE_STRING) {
 		free(g->string);
 	} else if(g->type == SN_TYPE_TREE) {
@@ -237,9 +240,6 @@ void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
 	} else if(g->type == SN_TYPE_FUNCTION || g->type == SN_TYPE_VARIABLE) {
 		free(g->name);
 	}
-	printf("freed type %d \n:", g->type);
-	sn_print_to(stdout, g);
-	printf("\n");
 	free(g);
 	if(sn == NULL) return;
 	int i;
