@@ -240,7 +240,7 @@ void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
 	} else if(g->type == SN_TYPE_FUNCTION || g->type == SN_TYPE_VARIABLE) {
 		free(g->name);
 	}
-	free(g);
+//	free(g);
 	if(sn == NULL) return;
 	int i;
 	for(i = 0; sn->generics[i] != NULL; i++);
