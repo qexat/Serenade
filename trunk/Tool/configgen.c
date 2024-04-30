@@ -35,7 +35,10 @@
 
 char choice[256];
 
-char* asks[] = {"repl", "y", "HAS_REPL_SUPPORT", "Do you want the REPL support?", "ffi", "y", "HAS_FFI_SUPPORT", "Do you want the FFI support?", "readline", "n", "HAS_READLINE_SUPPORT", "Do you want the readline support for the REPL?", "binmodule", "y", "HAS_BINMODULE_SUPPORT", "Do you want the binary module (e.g. so or dll) support?", NULL};
+char* asks[] = {"repl", "y", "HAS_REPL_SUPPORT", "Do you want the REPL support?",
+	"ffi", "y", "HAS_FFI_SUPPORT", "Do you want the FFI support?",
+	"readline", "n", "HAS_READLINE_SUPPORT", "Do you want the readline support for the REPL?",
+	"binmodule", "y", "HAS_BINMODULE_SUPPORT", "Do you want the binary module (e.g. so or dll) support?", NULL};
 
 void show_dialog(int n) {
 	fprintf(stderr, "[default is %c] %s ", asks[n * 4 + 1][0], asks[n * 4 + 3]);
@@ -106,7 +109,7 @@ int main(int argc, char** argv) {
 			fprintf(out, "#%s %s\n", ch == 'y' ? "define" : "undef", asks[n * 4 + 2]);
 			n++;
 			nl = false;
-			if(asks[n * 4 + 1] == NULL) break;
+			if(asks[n * 4] == NULL) break;
 			show_dialog(n);
 		} else {
 			nl = true;
