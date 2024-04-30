@@ -182,14 +182,14 @@ void sn_interpreter_free(struct sn_interpreter* sn) {
 	int i;
 	for(i = 0; sn->variables[i] != NULL; i++) {
 		free(sn->variables[i]->key);
-		if(sn->variables[i]->value != NULL) sn_generic_free(sn->variables[i]->value);
+		if(sn->variables[i]->value != NULL) sn_generic_free(sn, sn->variables[i]->value);
 		free(sn->variables[i]);
 	}
 	free(sn->variables);
 	for(i = 0; sn->generics[i] != NULL; i++) {
 		int j;
 		for(j = 0; sn->generics[i][j] != NULL; j++){
-			sn_generic_free(sn->generics[i][j]);
+			sn_generic_free(sn, sn->generics[i][j]);
 		}
 		free(sn->generics[i]);
 	}
@@ -214,7 +214,7 @@ struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char*
 	if(!global) {
 		for(i = 0; sn->local_variables[i] != NULL; i++) {
 			if(strcmp(sn->local_variables[i]->key, name) == 0) {
-				sn->local_variables[i]->value = sn_generic_dup(gen);
+				sn->local_variables[i]->value = gen;
 				replaced = true;
 				return sn->local_variables[i];
 			}
@@ -229,7 +229,7 @@ struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char*
 			}
 			sn->local_variables[i] = malloc(sizeof(struct sn_generic));
 			sn->local_variables[i]->key = sn_strdup(name);
-			sn->local_variables[i]->value = sn_generic_dup(gen);
+			sn->local_variables[i]->value = gen;
 			sn->local_variables[i]->handler = NULL;
 			if(gen != NULL && gen->type == SN_TYPE_FUNCTION) sn->local_variables[i]->handler = gen->handler;
 			sn->local_variables[i + 1] = NULL;

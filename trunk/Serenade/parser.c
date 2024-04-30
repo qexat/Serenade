@@ -229,23 +229,91 @@ struct sn_generic** sn_parse(char* data, unsigned long long size) {
 	return gens;
 }
 
-void sn_generic_free(struct sn_generic* g) {
+void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
 	if(g->type == SN_TYPE_STRING) {
 		free(g->string);
 	} else if(g->type == SN_TYPE_TREE) {
-		sn_tree_free(g->tree);
+		sn_tree_free(sn, g->tree);
 	} else if(g->type == SN_TYPE_FUNCTION || g->type == SN_TYPE_VARIABLE) {
 		free(g->name);
 	}
-	fprintf(stderr, "type %d free\n", g->type);
+	printf("freed type %d\n", g->type);
 	free(g);
+	if(sn == NULL) return;
+	int i;
+	for(i = 0; sn->generics[i] != NULL; i++);
+	struct sn_generic*** gens = malloc(sizeof(struct sn_generic**) * (i + 1));
+	for(i = 0; sn->generics[i] != NULL; i++) gens[i] = sn->generics[i];
+	gens[i] = NULL;
+	for(i = 0; sn->generics[i] != NULL; i++){
+		int j;
+		for(j = 0; sn->generics[i][j] != NULL; j++){
+			struct sn_generic** oldgens = gens[i];
+			int k;
+			int count = 0;
+			int matched = 0;
+			for(k = 0; oldgens[k] != NULL; k++){
+				if(oldgens[k] != g){
+					count++;
+				}else{
+					matched++;
+				}
+			}
+			if(matched == 0) continue;
+			gens[i] = malloc(sizeof(struct sn_generic*) * (count + 1));
+			count = 0;
+			for(k = 0; oldgens[k] != NULL; k++){
+				if(oldgens[k] != g){
+					gens[i][count] = oldgens[k];	
+					count++;
+				}
+			}
+			gens[i][count] = NULL;
+			free(oldgens[k]);
+		}
+	}
+	free(sn->generics);
+	sn->generics = gens;
+
+	for(i = 0; sn->variables[i] != NULL; i++);
+	struct sn_interpreter_kv** kvs = malloc(sizeof(struct sn_interpreter_kv*) * (i + 1));
+	for(i = 0; sn->variables[i] != NULL; i++) kvs[i] = sn->variables[i];
+	kvs[i] = NULL;
+	for(i = 0; sn->variables[i] != NULL; i++){
+		struct sn_interpreter_kv** oldkvs = kvs;
+		int j;
+		int count = 0;
+		int matched = 0;
+		for(j = 0; oldkvs[j] != NULL; j++){
+			if(oldkvs[j]->value != g){
+				count++;
+			}else{
+				matched++;
+			}
+		}
+		if(matched == 0) continue;
+		kvs = malloc(sizeof(struct sn_interpreter_kv*) * (count + 1));
+		count = 0;
+		for(j = 0; oldkvs[j] != NULL; j++){
+			if(oldkvs[j]->value != g){
+				kvs[count] = oldkvs[j];
+				count++;
+			}else{
+				free(oldkvs[j]->key);
+			}
+		}
+		kvs[count] = NULL;
+		free(oldkvs);
+	}
+	free(sn->variables);
+	sn->variables = kvs;
 }
 
-void sn_tree_free(struct sn_tree* t) {
+void sn_tree_free(struct sn_interpreter* sn, struct sn_tree* t) {
 	if(t->args != NULL) {
 		int i;
 		for(i = 0; t->args[i] != NULL; i++) {
-			sn_generic_free(t->args[i]);
+			sn_generic_free(sn, t->args[i]);
 		}
 		free(t->args);
 	}

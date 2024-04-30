@@ -58,8 +58,8 @@ struct sn_tree {
 };
 
 struct sn_generic** sn_parse(char* data, unsigned long long size);
-void sn_generic_free(struct sn_generic* g);
+void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g);
 struct sn_generic* sn_generic_dup(struct sn_generic* g);
-void sn_tree_free(struct sn_tree* t);
+void sn_tree_free(struct sn_interpreter* sn, struct sn_tree* t);
 
 #endif
