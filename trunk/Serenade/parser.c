@@ -107,6 +107,7 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size) {
 	int* index_stack = malloc(sizeof(int) * PARSER_STACK_SIZE);
 	char* argbuf = malloc(1);
 	argbuf[0] = 0;
+	gn_stack[0] = NULL;
 	int argbufmode = SN_TYPE_VOID;
 	for(i = 0; i < size; i++) {
 		char c = data[i];
@@ -176,7 +177,6 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size) {
 	free(argbuf);
 
 	struct sn_generic* gen = gn_stack[0];
-	free(gn_stack);
 	free(index_stack);
 
 	return gen;
@@ -240,7 +240,7 @@ void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
 	} else if(g->type == SN_TYPE_FUNCTION || g->type == SN_TYPE_VARIABLE) {
 		free(g->name);
 	}
-//	free(g);
+	free(g);
 	if(sn == NULL) return;
 	int i;
 	for(i = 0; sn->generics[i] != NULL; i++);
