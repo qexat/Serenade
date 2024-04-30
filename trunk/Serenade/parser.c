@@ -275,38 +275,31 @@ void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
 	free(sn->generics);
 	sn->generics = gens;
 
-	for(i = 0; sn->variables[i] != NULL; i++);
-	struct sn_interpreter_kv** kvs = malloc(sizeof(struct sn_interpreter_kv*) * (i + 1));
-	for(i = 0; sn->variables[i] != NULL; i++) kvs[i] = sn->variables[i];
-	kvs[i] = NULL;
-	for(i = 0; sn->variables[i] != NULL; i++){
-		struct sn_interpreter_kv** oldkvs = kvs;
-		int j;
-		int count = 0;
-		int matched = 0;
-		for(j = 0; oldkvs[j] != NULL; j++){
-			if(oldkvs[j]->value != g){
-				count++;
-			}else{
-				matched++;
-			}
-		}
-		if(matched == 0) continue;
-		kvs = malloc(sizeof(struct sn_interpreter_kv*) * (count + 1));
-		count = 0;
-		for(j = 0; oldkvs[j] != NULL; j++){
-			if(oldkvs[j]->value != g){
+	if(sn->variables != NULL){
+		for(i = 0; sn->variables[i] != NULL; i++);
+		struct sn_interpreter_kv** kvs = malloc(sizeof(struct sn_interpreter_kv*) * (i + 1));
+		for(i = 0; sn->variables[i] != NULL; i++) kvs[i] = sn->variables[i];
+		kvs[i] = NULL;
+		for(i = 0; sn->variables[i] != NULL; i++){
+			struct sn_interpreter_kv** oldkvs = kvs;
+			int j;
+			int count = 0;
+			int matched = 0;
+			for(j = 0; oldkvs[j] != NULL; j++) count++;
+			kvs = malloc(sizeof(struct sn_interpreter_kv*) * (count + 1));
+			count = 0;
+			for(j = 0; oldkvs[j] != NULL; j++){
 				kvs[count] = oldkvs[j];
+				if(oldkvs[j]->value == g){
+					kvs[count]->value = NULL;
+				}
 				count++;
-			}else{
-				free(oldkvs[j]->key);
 			}
+			kvs[count] = NULL;
+			free(oldkvs);
 		}
-		kvs[count] = NULL;
-		free(oldkvs);
+		sn->variables = kvs;
 	}
-	free(sn->variables);
-	sn->variables = kvs;
 }
 
 void sn_tree_free(struct sn_interpreter* sn, struct sn_tree* t) {
