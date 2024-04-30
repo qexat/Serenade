@@ -230,7 +230,7 @@ struct sn_generic** sn_parse(char* data, unsigned long long size) {
 }
 
 void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
-	printf("freed type %d \n:", g->type);
+	printf("freed type %d @ %x \n:", g->type, g);
 	sn_print_to(stdout, g);
 	printf("\n");
 	if(g->type == SN_TYPE_STRING) {
