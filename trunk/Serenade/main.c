@@ -48,14 +48,20 @@
 
 extern bool is_repl;
 
+#ifdef HAS_REPL_SUPPORT
 int run_command(const char* cmd) {
 	if(strcmp(cmd, ":quit") == 0) {
 		return 1;
+	} else if(strcmp(cmd, ":version") == 0) {
+		printf("Serenade LISP %s\n", SERENADE_VERSION);
+		printf("Support: %s\n", SUPPORT);
+		printf("Parser stack size: %d\n", PARSER_STACK_SIZE);
 	} else {
 		fprintf(stderr, "Unknown command\n");
-		return 0;
 	}
+	return 0;
 }
+#endif
 
 int main(int argc, char** argv) {
 	int i;

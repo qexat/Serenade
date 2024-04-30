@@ -230,9 +230,6 @@ struct sn_generic** sn_parse(char* data, unsigned long long size) {
 }
 
 void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
-	printf("freed type %d @ %x \n:", g->type, g);
-	sn_print_to(stdout, g);
-	printf("\n");
 	if(g->type == SN_TYPE_STRING) {
 		free(g->string);
 	} else if(g->type == SN_TYPE_TREE) {
@@ -242,30 +239,31 @@ void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
 	}
 	if(sn == NULL) return;
 	int i;
-	for(i = 0; sn->generics[i] != NULL; i++);
+	for(i = 0; sn->generics[i] != NULL; i++)
+		;
 	struct sn_generic*** gens = malloc(sizeof(struct sn_generic**) * (i + 1));
 	for(i = 0; sn->generics[i] != NULL; i++) gens[i] = sn->generics[i];
 	gens[i] = NULL;
-	for(i = 0; sn->generics[i] != NULL; i++){
+	for(i = 0; sn->generics[i] != NULL; i++) {
 		int j;
-		for(j = 0; sn->generics[i][j] != NULL; j++){
+		for(j = 0; sn->generics[i][j] != NULL; j++) {
 			struct sn_generic** oldgens = gens[i];
 			int k;
 			int count = 0;
 			int matched = 0;
-			for(k = 0; oldgens[k] != NULL; k++){
-				if(oldgens[k] != g){
+			for(k = 0; oldgens[k] != NULL; k++) {
+				if(oldgens[k] != g) {
 					count++;
-				}else{
+				} else {
 					matched++;
 				}
 			}
 			if(matched == 0) continue;
 			gens[i] = malloc(sizeof(struct sn_generic*) * (count + 1));
 			count = 0;
-			for(k = 0; oldgens[k] != NULL; k++){
-				if(oldgens[k] != g){
-					gens[i][count] = oldgens[k];	
+			for(k = 0; oldgens[k] != NULL; k++) {
+				if(oldgens[k] != g) {
+					gens[i][count] = oldgens[k];
 					count++;
 				}
 			}
@@ -276,12 +274,13 @@ void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
 	free(sn->generics);
 	sn->generics = gens;
 
-	if(sn->variables != NULL){
-		for(i = 0; sn->variables[i] != NULL; i++);
+	if(sn->variables != NULL) {
+		for(i = 0; sn->variables[i] != NULL; i++)
+			;
 		struct sn_interpreter_kv** kvs = malloc(sizeof(struct sn_interpreter_kv*) * (i + 1));
 		for(i = 0; sn->variables[i] != NULL; i++) kvs[i] = sn->variables[i];
 		kvs[i] = NULL;
-		for(i = 0; sn->variables[i] != NULL; i++){
+		for(i = 0; sn->variables[i] != NULL; i++) {
 			struct sn_interpreter_kv** oldkvs = kvs;
 			int j;
 			int count = 0;
@@ -289,10 +288,10 @@ void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
 			for(j = 0; oldkvs[j] != NULL; j++) count++;
 			kvs = malloc(sizeof(struct sn_interpreter_kv*) * (count + 1));
 			count = 0;
-			for(j = 0; oldkvs[j] != NULL; j++){
+			for(j = 0; oldkvs[j] != NULL; j++) {
 				if(oldkvs[j] == (void*)1) continue;
 				kvs[count] = oldkvs[j];
-				if(oldkvs[j]->value == g){
+				if(oldkvs[j]->value == g) {
 					kvs[count]->value = NULL;
 				}
 				count++;
