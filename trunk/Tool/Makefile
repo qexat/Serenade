@@ -8,10 +8,10 @@ CONFIGGEN_OBJS = configgen.o
 all: ./configgen
 
 ./configgen: $(CONFIGGEN_OBJS)
-	cc -o $@ $(CONFIGGEN_OBJS)
+	$(CC) -o $@ $(CONFIGGEN_OBJS)
 
 .c.o:
-	cc -c -o $@ $<
+	$(CC) -c -o $@ $<
 
 clean:
 	rm -f *.o ./configgen ./configgen.exe
