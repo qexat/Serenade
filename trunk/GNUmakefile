@@ -1,12 +1,14 @@
 # $Id$
 
-GREP := grep
-ifeq ($(shell uname -s),SunOS)
-GREP := ggrep
-endif
-
 CPP = cpp
 CC = cc
+
+GREP = grep
+ifeq ($(shell uname -s),SunOS)
+GREP = ggrep
+CC = gcc
+endif
+
 CFLAGS = -std=c99 -fPIC -g `$(CPP) -DCFLAGS cmdline | $(GREP) -vE "^\#" | tr '\\n' ' '`
 LDFLAGS =
 LIBS = `$(CPP) -DLIBS cmdline | $(GREP) -vE "^\#" | tr '\\n' ' '`
