@@ -33,7 +33,7 @@
 #include "interpreter.h"
 #include "util.h"
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(_MSC_VER)
 #include <libloaderapi.h>
 #else
 #include <dlfcn.h>
@@ -54,7 +54,7 @@ struct sn_generic* binmodule_load_handler(struct sn_interpreter* sn, int argc, s
 			char* path = malloc(args[1]->string_length + 1);
 			memcpy(path, args[1]->string, args[1]->string_length);
 			path[args[1]->string_length] = 0;
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(_MSC_VER)
 			lib = LoadLibraryA(path);
 #else
 			lib = dlopen(path, RTLD_LAZY);
@@ -75,7 +75,7 @@ struct sn_generic* binmodule_load_handler(struct sn_interpreter* sn, int argc, s
 		conf->set_handler = sn_set_handler;
 		char* symbol_name = sn_strcat(name, "_init");
 		int (*loadfunc)(struct sn_binmodule_config*);
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(_MSC_VER)
 		loadfunc = (int (*)(struct sn_binmodule_config*))GetProcAddress(lib, symbol_name);
 #else
 		loadfunc = (int (*)(struct sn_binmodule_config*))dlsym(lib, symbol_name);
