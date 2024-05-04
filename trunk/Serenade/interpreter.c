@@ -222,6 +222,7 @@ struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char*
 	if(!global) {
 		for(i = 0; sn->local_variables[i] != NULL; i++) {
 			if(strcmp(sn->local_variables[i]->key, name) == 0) {
+				free(sn->local_variables[i]->value);
 				sn->local_variables[i]->value = gen;
 				replaced = true;
 				return sn->local_variables[i];
@@ -237,7 +238,7 @@ struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char*
 			}
 			sn->local_variables[i] = malloc(sizeof(struct sn_generic));
 			sn->local_variables[i]->key = sn_strdup(name);
-			sn->local_variables[i]->value = gen;
+			sn->local_variables[i]->value = sn_generic_dup(gen);
 			sn->local_variables[i]->handler = NULL;
 			if(gen != NULL && gen->type == SN_TYPE_FUNCTION) sn->local_variables[i]->handler = gen->handler;
 			sn->local_variables[i + 1] = NULL;
@@ -247,6 +248,7 @@ struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char*
 	for(i = 0; sn->variables[i] != NULL; i++) {
 		if(sn->variables[i]->value == NULL) continue;
 		if(strcmp(sn->variables[i]->key, name) == 0) {
+			free(sn->variables[i]->value);
 			sn->variables[i]->value = gen;
 			replaced = true;
 			return sn->variables[i];
@@ -262,7 +264,7 @@ struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char*
 		}
 		sn->variables[i] = malloc(sizeof(struct sn_generic));
 		sn->variables[i]->key = sn_strdup(name);
-		sn->variables[i]->value = gen;
+		sn->variables[i]->value = sn_generic_dup(gen);
 		sn->variables[i]->handler = NULL;
 		if(gen != NULL && gen->type == SN_TYPE_FUNCTION) sn->variables[i]->handler = gen->handler;
 		sn->variables[i + 1] = NULL;
