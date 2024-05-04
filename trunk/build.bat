@@ -31,5 +31,3 @@ cl /Fe:serenade.exe *.obj
 
 REM Return to previous directory
 cd ..
-
-cl /LD binmod.c
