@@ -1,11 +1,12 @@
 # $Id$
 
+TARGET = $$(uname -s)
 CPP = cpp
 CC = cc
-CFLAGS = -std=c99 -fPIC -g `./Tool/config cflags`
+CFLAGS = -std=c99 -fPIC -g `./Tool/config cflags $(TARGET)`
 LDFLAGS =
-LIBS = `./Tool/config libs`
-EXTRA_OBJS = `./Tool/config objs`
+LIBS = `./Tool/config libs $(TARGET)`
+EXTRA_OBJS = `./Tool/config objs $(TARGET)`
 SUFFIX =
 SUFFIX_SO = .so
 PREFIX_SO = lib

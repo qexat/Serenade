@@ -10,37 +10,35 @@ int main(int argc, char** argv) {
 		fprintf(stderr, "insufficient arguments\n");
 		return 1;
 	}
+	char* argv2 = argv[2] == NULL ? "" : argv[2];
 	if(strcmp(argv[1], "cflags") == 0) {
-		printf(
-#ifdef __NetBSD__
-		    "-I/usr/pkg/include "
-#endif
-		    "\n");
+		if(strcmp(argv2, "NetBSD") == 0){
+			printf("-I/usr/pkg/include ");
+		}
+		printf("\n");
 	} else if(strcmp(argv[1], "libs") == 0) {
-		printf(
-#ifdef __NetBSD__
-		    "-Wl,-R/usr/pkg/lib -L/usr/pkg/lib "
-#endif
+		if(strcmp(argv2, "NetBSD") == 0){
+			printf("-L/usr/pkg/lib -Wl,-R/usr/pkg/lib ");
+		}
 #ifdef HAS_FFI_SUPPORT
-		    "-lffi "
+		printf("-lffi ");
 #endif
 #ifdef HAS_READLINE_SUPPORT
-		    "-lreadline "
+		printf("-lreadline ");
 #endif
 #if defined(HAS_FFI_SUPPORT) || defined(HAS_BINMODULE_SUPPORT)
-#ifdef __linux__
-		    "-ldl "
+		if(strcmp(argv2, "NetBSD") != 0 && strcmp(argv2, "Windows") == 0){
+			printf("-ldl ");
+		}
 #endif
-#endif
-		    "\n");
+		printf("\n");
 	} else if(strcmp(argv[1], "objs") == 0) {
-		printf(
 #ifdef HAS_FFI_SUPPORT
-		    "ffi_binding.o "
+		printf("ffi_binding.o ");
 #endif
 #ifdef HAS_BINMODULE_SUPPORT
-		    "binmodule.o "
+		printf("binmodule.o ");
 #endif
-		    "\n");
+		printf("\n");
 	}
 }
