@@ -15,17 +15,19 @@ PREFIX_SO = lib
 .include "platforms/${PLATFORM}.mk"
 .endif
 
-.PHONY: all ./Serenade ./Tool replace format
+.PHONY: all ./Serenade ./Tool/config ./Tool replace format
 
-all: ./Tool ./config.h ./Serenade
+all: ./Tool ./Tool/config ./config.h ./Serenade
 
 ./Tool::
 	$(MAKE) -C ./Tool CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)"
 
+./Tool/config::
+	$(MAKE) -C ./Tool CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)" config
+
 ./config.h:
 	if [ ! -e ./Tool/configgen ]; then $(MAKE) ./Tool ; fi
 	./Tool/configgen $@
-	$(MAKE) -C ./Tool CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)" config
 
 ./Serenade::
 	$(MAKE) -C ./Serenade CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)" EXTRA_OBJS="$(EXTRA_OBJS)" SUFFIX_SO="$(SUFFIX_SO)" PREFIX_SO="$(PREFIX_SO)"
