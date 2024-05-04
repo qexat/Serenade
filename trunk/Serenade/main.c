@@ -106,8 +106,8 @@ int main(int argc, char** argv) {
 #ifdef HAS_REPL_SUPPORT
 	if(!loaded) {
 		is_repl = true;
-		printf("  ---+-------+---    oooo                                            8       \n");
-		printf("  ---+-------+---   8    8                                           8       \n");
+		printf("  ---+---+---+---    oooo                                            8       \n");
+		printf("  ---+---+---+---   8    8                                           8       \n");
 		printf("     |       |      8       oooo  8 oooo   oooo  8 oooo   oooo   oooo8  oooo \n");
 		printf("     |       |       oooo  8    8 8o    o 8    8 8o    8      8 8    8 8    8\n");
 		printf("     |       |           8 8oooo8 8       8oooo8 8     8  oooo8 8    8 8oooo8\n");

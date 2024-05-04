@@ -10,8 +10,11 @@ all: ./configgen
 ./configgen: $(CONFIGGEN_OBJS)
 	$(CC) -o $@ $(CONFIGGEN_OBJS)
 
+./config: config.c
+	$(CC) -o $@ config.c
+
 .c.o:
 	$(CC) -c -o $@ $<
 
 clean:
-	rm -f *.o ./configgen ./configgen.exe
+	rm -f *.o ./configgen ./configgen.exe ./config

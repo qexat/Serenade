@@ -2,10 +2,10 @@
 
 CPP = cpp
 CC = cc
-CFLAGS = -std=c99 -fPIC -g `$(CPP) -DCFLAGS cmdline | $(GREP) -vE "^\#" | tr '\\n' ' '`
+CFLAGS = -std=c99 -fPIC -g `./Tool/config cflags`
 LDFLAGS =
-LIBS = `$(CPP) -DLIBS cmdline | $(GREP) -vE "^\#" | tr '\\n' ' '`
-EXTRA_OBJS = `$(CPP) -DOBJS cmdline | $(GREP) -vE "^\#" | tr '\\n' ' '`
+LIBS = `./Tool/config libs`
+EXTRA_OBJS = `./Tool/config objs`
 SUFFIX =
 SUFFIX_SO = .so
 PREFIX_SO = lib

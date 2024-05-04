@@ -9,10 +9,10 @@ GREP = ggrep
 CC = gcc
 endif
 
-CFLAGS = -std=c99 -fPIC -g `$(CPP) -DCFLAGS cmdline | $(GREP) -vE "^\#" | tr '\\n' ' '`
+CFLAGS = -std=c99 -fPIC -g `./Tool/config cflags`
 LDFLAGS =
-LIBS = `$(CPP) -DLIBS cmdline | $(GREP) -vE "^\#" | tr '\\n' ' '`
-EXTRA_OBJS = `$(CPP) -DOBJS cmdline | $(GREP) -vE "^\#" | tr '\\n' ' '`
+LIBS = `./Tool/config libs`
+EXTRA_OBJS = `./Tool/config objs`
 SUFFIX =
 SUFFIX_SO = .so
 PREFIX_SO = lib
@@ -31,6 +31,7 @@ all: ./Tool ./config.h ./Serenade
 ./config.h:
 	if [ ! -e ./Tool/configgen ]; then $(MAKE) ./Tool ; fi
 	./Tool/configgen $@
+	$(MAKE) -C ./Tool CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)" config
 
 ./Serenade::
 	$(MAKE) -C ./Serenade CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)" EXTRA_OBJS="$(EXTRA_OBJS)" SUFFIX_SO="$(SUFFIX_SO)" PREFIX_SO="$(PREFIX_SO)"
