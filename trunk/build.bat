@@ -2,7 +2,7 @@
 REM $Id$
 
 REM Change this as you want
-call "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat
+call "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat"
 
 REM Set current directory
 cd %CD%
