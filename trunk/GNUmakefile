@@ -22,9 +22,9 @@ ifneq ("$(PLATFORM)", "")
 include "platforms/${PLATFORM}.mk"
 endif
 
-.PHONY: all ./Serenade ./Tool replace format
+.PHONY: all ./Serenade ./Tool/config ./Tool replace format
 
-all: ./Tool ./config.h ./Serenade
+all: ./Tool ./config.h ./Tool/config ./Serenade
 
 ./Tool::
 	$(MAKE) -C ./Tool CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)"

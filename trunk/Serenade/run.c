@@ -50,6 +50,22 @@ struct sn_generic* run_code(struct sn_interpreter* sn, int argc, struct sn_gener
 	sn->local_variables = malloc(sizeof(struct sn_interpreter_kv*));
 	sn->local_variables[0] = NULL;
 	sn->callstack++;
+
+	int callstack_size = 4096;
+	if(sn->variables != NULL) {
+		int i;
+		for(i = 0; sn->variables[i] != NULL; i++) {
+			if(strcmp(sn->variables[i]->key, "serenade-callstack") == 0) {
+				callstack_size = sn->variables[i]->value->number;
+				break;
+			}
+		}
+	}
+
+	if(sn->callstack > callstack_size) {
+		fprintf(stderr, "Callstack overflow.\n");
+		return NULL;
+	}
 	for(i = 0; gens[i] != NULL; i++) {
 		_sn_run(sn, gens[i]);
 	}

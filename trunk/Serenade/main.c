@@ -123,6 +123,7 @@ int main(int argc, char** argv) {
 		printf("Compiled in MSC %d\n", _MSC_FULL_VER);
 #endif
 		printf("Parser stack size: %d\n", PARSER_STACK_SIZE);
+		printf("Callstack size: %d\n", CALLSTACK_SIZE);
 		struct sn_interpreter* sn = sn_create_interpreter();
 		sn_stdlib_init(sn);
 		sn_module_init(sn);

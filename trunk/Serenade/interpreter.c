@@ -175,6 +175,11 @@ struct sn_interpreter* sn_create_interpreter(void) {
 	sn->generics[0] = NULL;
 	sn->callstack = 0;
 
+	struct sn_generic* callstack_size = malloc(sizeof(struct sn_generic));
+	callstack_size->type = SN_TYPE_DOUBLE;
+	callstack_size->number = CALLSTACK_SIZE;
+	sn_set_variable(sn, "serenade-callstack", callstack_size);
+
 	return sn;
 }
 

@@ -12,12 +12,12 @@ int main(int argc, char** argv) {
 	}
 	char* argv2 = argv[2] == NULL ? "" : argv[2];
 	if(strcmp(argv[1], "cflags") == 0) {
-		if(strcmp(argv2, "NetBSD") == 0){
+		if(strcmp(argv2, "NetBSD") == 0) {
 			printf("-I/usr/pkg/include ");
 		}
 		printf("\n");
 	} else if(strcmp(argv[1], "libs") == 0) {
-		if(strcmp(argv2, "NetBSD") == 0){
+		if(strcmp(argv2, "NetBSD") == 0) {
 			printf("-L/usr/pkg/lib -Wl,-R/usr/pkg/lib ");
 		}
 #ifdef HAS_FFI_SUPPORT
@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
 		printf("-lreadline ");
 #endif
 #if defined(HAS_FFI_SUPPORT) || defined(HAS_BINMODULE_SUPPORT)
-		if(strcmp(argv2, "NetBSD") != 0 && strcmp(argv2, "Windows") == 0){
+		if(strcmp(argv2, "NetBSD") != 0 && strcmp(argv2, "Windows") == 0) {
 			printf("-ldl ");
 		}
 #endif

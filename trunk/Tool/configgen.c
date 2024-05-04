@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
 	bool def = false;
 
 	int stack_size = 1024;
+	int callstack_size = 4096;
 
 	if(argv[1] != NULL) {
 		out = fopen(argv[1], "w");
@@ -79,6 +80,7 @@ int main(int argc, char** argv) {
 			fprintf(out, "#%s %s\n", asks[n * 4 + 1][0] == 'y' ? "define" : "undef", asks[n * 4 + 2]);
 		}
 		fprintf(out, "#define PARSER_STACK_SIZE %d\n", stack_size);
+		fprintf(out, "#define CALLSTACK_SIZE %d\n", callstack_size);
 		fprintf(out, "#define SUPPORT \"");
 		for(n = 0; asks[n * 4] != NULL; n++) {
 			if(n > 0) fprintf(out, " ");
@@ -116,6 +118,10 @@ int main(int argc, char** argv) {
 	fflush(stderr);
 	scanf("%d", &stack_size);
 	fprintf(out, "#define PARSER_STACK_SIZE %d\n", stack_size);
+	fprintf(stderr, "[recommended: 4096] Callstack size? ");
+	fflush(stderr);
+	scanf("%d", &callstack_size);
+	fprintf(out, "#define CALLSTACK_SIZE %d\n", callstack_size);
 	fprintf(out, "#define SUPPORT \"");
 	for(n = 0; asks[n * 4] != NULL; n++) {
 		if(n > 0) fprintf(out, " ");

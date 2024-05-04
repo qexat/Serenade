@@ -17,7 +17,7 @@ PREFIX_SO = lib
 
 .PHONY: all ./Serenade ./Tool/config ./Tool replace format
 
-all: ./Tool ./Tool/config ./config.h ./Serenade
+all: ./Tool ./config.h ./Tool/config ./Serenade
 
 ./Tool::
 	$(MAKE) -C ./Tool CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)"
