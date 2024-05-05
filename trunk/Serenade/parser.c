@@ -245,6 +245,7 @@ void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
 		free(g->name);
 	}
 	if(sn == NULL) return;
+regen:;
 	int i;
 	for(i = 0; sn->generics[i] != NULL; i++)
 		;
@@ -276,10 +277,11 @@ void sn_generic_free(struct sn_interpreter* sn, struct sn_generic* g) {
 			}
 			gens[i][count] = NULL;
 			free(oldgens[k]);
+			free(sn->generics);
+			sn->generics = gens;
+			goto regen;
 		}
 	}
-	free(sn->generics);
-	sn->generics = gens;
 
 	if(sn->variables != NULL) {
 		for(i = 0; sn->variables[i] != NULL; i++)

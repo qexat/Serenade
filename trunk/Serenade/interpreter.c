@@ -269,8 +269,8 @@ void sn_interpreter_free(struct sn_interpreter* sn) {
 do_again:
 	for(i = 0; sn->variables[i] != NULL; i++) {
 		if(sn->variables[i] != NULL) {
-			free(sn->variables[i]->key);
 			if(sn->variables[i]->value != NULL) {
+				free(sn->variables[i]->key);
 				sn_generic_free(sn, sn->variables[i]->value);
 				goto do_again;
 			}
