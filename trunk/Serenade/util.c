@@ -42,6 +42,13 @@ char* sn_strcat(const char* str1, const char* str2) {
 	return str;
 }
 
+char* sn_strcat3(const char* str1, const char* str2, const char* str3) {
+	char* tmp = sn_strcat(str1, str2);
+	char* r = sn_strcat(tmp, str3);
+	free(tmp);
+	return r;
+}
+
 char* sn_strdup(const char* str1) {
 	char* str = malloc(strlen(str1) + 1);
 	memcpy(str, str1, strlen(str1));

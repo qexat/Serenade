@@ -160,7 +160,7 @@ int main(int argc, char** argv) {
 				continue;
 			}
 			char* tmp = str;
-			str = sn_strcat(tmp, line);
+			str = sn_strcat3(tmp, line, "\n");
 			free(tmp);
 			if(br == 0) {
 				sn_eval(sn, str, strlen(str));
@@ -203,7 +203,7 @@ int main(int argc, char** argv) {
 			}
 			if(cbuf[0] != '\r' && cbuf[0] != '\n') {
 				char* tmp = str;
-				str = sn_strcat(tmp, cbuf);
+				str = sn_strcat3(tmp, cbuf, "\n");
 				free(tmp);
 			}
 #endif

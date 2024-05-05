@@ -36,6 +36,7 @@
 #include <stdio.h>
 
 char* sn_strcat(const char* str1, const char* str2);
+char* sn_strcat3(const char* str1, const char* str2, const char* str3);
 char* sn_strdup(const char* str1);
 void sn_print_to(FILE* f, struct sn_generic* gen);
 void sn_print_generic(struct sn_generic* gen);
