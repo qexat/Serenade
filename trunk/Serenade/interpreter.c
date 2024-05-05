@@ -94,6 +94,57 @@ struct sn_generic* cond_handler(struct sn_interpreter* sn, int args, struct sn_g
 	return gen;
 }
 
+struct sn_generic* cond1_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	gen->type = SN_TYPE_DOUBLE;
+	gen->number = 0;
+	int i;
+	if(args != 2 || !(gens[1]->type == SN_TYPE_DOUBLE)) {
+		gen->number = -1;
+	} else {
+		double a = gens[1]->number;
+		if(strcmp(gens[0]->name, "not") == 0) {
+			gen->number = a == 0 ? 1 : 0;
+		}
+	}
+	return gen;
+}
+
+struct sn_generic* condn_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	gen->type = SN_TYPE_DOUBLE;
+	gen->number = 0;
+	int i;
+	if(args < 2) {
+		gen->number = -1;
+	} else {
+		int i;
+		for(i = 1; i < args; i++){
+			if(gens[i]->type != SN_TYPE_DOUBLE){
+				gen->number = -1;
+				return gen;
+			}
+		}
+		if(strcmp(gens[0]->name, "or") == 0) {
+			for(i = 1; i < args; i++){
+				if(gens[i]->number != 0){
+					gen->number = 1;
+					break;
+				}
+			}
+		}else if(strcmp(gens[0]->name, "and") == 0) {
+			gen->number = 1;
+			for(i = 1; i < args; i++){
+				if(gens[i]->number == 0){
+					gen->number = 0;
+					break;
+				}
+			}
+		}
+	}
+	return gen;
+}
+
 struct sn_generic* print_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
 	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
 	int i;
@@ -178,6 +229,9 @@ void sn_stdlib_init(struct sn_interpreter* sn) {
 	sn_set_handler(sn, ">=", cond_handler);
 	sn_set_handler(sn, "<", cond_handler);
 	sn_set_handler(sn, ">", cond_handler);
+	sn_set_handler(sn, "not", cond1_handler);
+	sn_set_handler(sn, "or", condn_handler);
+	sn_set_handler(sn, "and", condn_handler);
 	sn_set_handler(sn, "print", print_handler);
 	sn_set_handler(sn, "eval", eval_handler);
 	sn_set_handler(sn, "define-variable", defvar_handler);

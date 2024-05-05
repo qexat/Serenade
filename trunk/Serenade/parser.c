@@ -162,7 +162,7 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size) {
 				free(tmp);
 
 				if(argbufmode == SN_TYPE_VOID) {
-					if(c == '.' || (c >= '0' && c <= '9')) {
+					if(c == '.' || c == '-' || (c >= '0' && c <= '9')) {
 						argbufmode = SN_TYPE_DOUBLE;
 					} else if(index_stack[br - 1] == 0) {
 						argbufmode = SN_TYPE_FUNCTION;
