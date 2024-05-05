@@ -146,6 +146,47 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 					goto do_loop;
 				}
 				return r;
+			} else if(strcmp(op->name, "if") == 0) {
+				int i;
+				for(i = 0; gen->tree->args[i] != NULL; i++)
+					;
+				if(i < 2) {
+					fprintf(stderr, "Insufficient arguments\n");
+					free(r);
+					return NULL;
+				}
+				struct sn_interpreter_kv** old_kv = sn->local_variables;
+				sn->local_variables = malloc(sizeof(struct sn_interpreter_kv*));
+				sn->local_variables[0] = NULL;
+
+				struct sn_generic* cond = _sn_run(sn, gen->tree->args[1]);
+				if(cond == NULL) {
+					free(r);
+					return NULL;
+				}
+
+				free(sn->local_variables);
+				sn->local_variables = old_kv;
+
+				r->type = SN_TYPE_VOID;
+
+				if(cond->type != SN_TYPE_DOUBLE) {
+					fprintf(stderr, "Cannot use non-number (Type %d) for loop condition\n", r->type);
+					free(r);
+					return NULL;
+				} else if(cond->number != 0) {
+					old_kv = sn->local_variables;
+					sn->local_variables = malloc(sizeof(struct sn_interpreter_kv*));
+					sn->local_variables[0] = NULL;
+
+					for(i = 2; gen->tree->args[i] != NULL; i++) {
+						_sn_run(sn, gen->tree->args[i]);
+					}
+
+					free(sn->local_variables);
+					sn->local_variables = old_kv;
+				}
+				return r;
 			}
 			bool called = false;
 			int j;

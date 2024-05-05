@@ -119,23 +119,23 @@ struct sn_generic* condn_handler(struct sn_interpreter* sn, int args, struct sn_
 		gen->number = -1;
 	} else {
 		int i;
-		for(i = 1; i < args; i++){
-			if(gens[i]->type != SN_TYPE_DOUBLE){
+		for(i = 1; i < args; i++) {
+			if(gens[i]->type != SN_TYPE_DOUBLE) {
 				gen->number = -1;
 				return gen;
 			}
 		}
 		if(strcmp(gens[0]->name, "or") == 0) {
-			for(i = 1; i < args; i++){
-				if(gens[i]->number != 0){
+			for(i = 1; i < args; i++) {
+				if(gens[i]->number != 0) {
 					gen->number = 1;
 					break;
 				}
 			}
-		}else if(strcmp(gens[0]->name, "and") == 0) {
+		} else if(strcmp(gens[0]->name, "and") == 0) {
 			gen->number = 1;
-			for(i = 1; i < args; i++){
-				if(gens[i]->number == 0){
+			for(i = 1; i < args; i++) {
+				if(gens[i]->number == 0) {
 					gen->number = 0;
 					break;
 				}
