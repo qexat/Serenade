@@ -62,6 +62,8 @@ void sn_print_to(FILE* f, struct sn_generic* gen) {
 			fprintf(f, ":%x", gen->handler);
 		}
 		fprintf(f, ">");
+	} else if(gen->type == SN_TYPE_VARIABLE) {
+		fprintf(f, "<variable %s>", gen->name == NULL ? "(unnamed)" : gen->name);
 	} else if(gen->type == SN_TYPE_PTR) {
 		fprintf(f, "<pointer %x>", gen->ptr);
 	}

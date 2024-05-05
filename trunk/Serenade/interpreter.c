@@ -71,6 +71,29 @@ struct sn_generic* math_handler(struct sn_interpreter* sn, int args, struct sn_g
 	return gen;
 }
 
+struct sn_generic* cond_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
+	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
+	gen->type = SN_TYPE_DOUBLE;
+	gen->number = 0;
+	int i;
+	if(args != 3 || !(gens[1]->type == SN_TYPE_DOUBLE && gens[2]->type == SN_TYPE_DOUBLE)) {
+		gen->number = -1;
+	} else {
+		double a = gens[1]->number;
+		double b = gens[2]->number;
+		if(strcmp(gens[0]->name, "<") == 0) {
+			gen->number = a < b ? 1 : 0;
+		} else if(strcmp(gens[0]->name, ">") == 0) {
+			gen->number = a > b ? 1 : 0;
+		} else if(strcmp(gens[0]->name, ">=") == 0) {
+			gen->number = a >= b ? 1 : 0;
+		} else if(strcmp(gens[0]->name, ">=") == 0) {
+			gen->number = a <= b ? 1 : 0;
+		}
+	}
+	return gen;
+}
+
 struct sn_generic* print_handler(struct sn_interpreter* sn, int args, struct sn_generic** gens) {
 	struct sn_generic* gen = malloc(sizeof(struct sn_generic));
 	int i;
@@ -151,6 +174,10 @@ void sn_stdlib_init(struct sn_interpreter* sn) {
 	sn_set_handler(sn, "-", math_handler);
 	sn_set_handler(sn, "*", math_handler);
 	sn_set_handler(sn, "/", math_handler);
+	sn_set_handler(sn, "<=", cond_handler);
+	sn_set_handler(sn, ">=", cond_handler);
+	sn_set_handler(sn, "<", cond_handler);
+	sn_set_handler(sn, ">", cond_handler);
 	sn_set_handler(sn, "print", print_handler);
 	sn_set_handler(sn, "eval", eval_handler);
 	sn_set_handler(sn, "define-variable", defvar_handler);
@@ -199,8 +226,10 @@ do_again:
 		int j;
 	do_again2:
 		for(j = 0; sn->generics[i][j] != NULL; j++) {
-			if(sn->generics[i][j] != (void*)1) sn_generic_free(sn, sn->generics[i][j]);
-			goto do_again2;
+			if(sn->generics[i][j] != (void*)1 && sn->generics[i][j] != (void*)2) {
+				sn_generic_free(sn, sn->generics[i][j]);
+				goto do_again2;
+			}
 		}
 		free(sn->generics[i]);
 	}
@@ -306,6 +335,7 @@ int sn_eval(struct sn_interpreter* sn, char* data, unsigned long long len) {
 				}
 			}
 		}
+		if(r == 1) return r;
 		int j;
 		struct sn_generic*** oldgens = sn->generics;
 		for(j = 0; oldgens[j] != NULL; j++)
