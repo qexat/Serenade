@@ -185,18 +185,22 @@ struct sn_interpreter* sn_create_interpreter(void) {
 
 void sn_interpreter_free(struct sn_interpreter* sn) {
 	int i;
+do_again:
 	for(i = 0; sn->variables[i] != NULL; i++) {
 		if(sn->variables[i] != NULL) {
 			free(sn->variables[i]->key);
-			if(sn->variables[i]->value != NULL) sn_generic_free(sn, sn->variables[i]->value);
-			sn->variables[i]->value = NULL;
-			free(sn->variables[i]);
+			if(sn->variables[i]->value != NULL) {
+				sn_generic_free(sn, sn->variables[i]->value);
+				goto do_again;
+			}
 		}
 	}
 	for(i = 0; sn->generics[i] != NULL; i++) {
 		int j;
+	do_again2:
 		for(j = 0; sn->generics[i][j] != NULL; j++) {
-			sn_generic_free(sn, sn->generics[i][j]);
+			if(sn->generics[i][j] != (void*)1) sn_generic_free(sn, sn->generics[i][j]);
+			goto do_again2;
 		}
 		free(sn->generics[i]);
 	}

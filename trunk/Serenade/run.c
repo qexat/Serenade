@@ -103,6 +103,9 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 				kv->argvalue = gen->tree->args + 1;
 				free(name);
 				return r;
+			} else if(strcmp(op->name, "loop") == 0) {
+				r->type = SN_TYPE_VOID;
+				return r;
 			}
 			bool called = false;
 			int j;
