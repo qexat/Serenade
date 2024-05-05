@@ -3,6 +3,7 @@
 TARGET = $$(uname -s)
 CPP = cpp
 CC = cc
+
 CFLAGS = -std=c99 -fPIC -g `./Tool/config cflags $(TARGET)`
 LDFLAGS =
 LIBS = `./Tool/config libs $(TARGET)`
