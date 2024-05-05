@@ -66,13 +66,13 @@ void sn_print_to(FILE* f, struct sn_generic* gen) {
 	} else if(gen->type == SN_TYPE_FUNCTION) {
 		fprintf(f, "<function %s", gen->name == NULL ? "(anonymous)" : gen->name);
 		if(gen->name == NULL) {
-			fprintf(f, ":%x", gen->handler);
+			fprintf(f, ":%llx", (unsigned long long)gen->handler);
 		}
 		fprintf(f, ">");
 	} else if(gen->type == SN_TYPE_VARIABLE) {
 		fprintf(f, "<variable %s>", gen->name == NULL ? "(unnamed)" : gen->name);
 	} else if(gen->type == SN_TYPE_PTR) {
-		fprintf(f, "<pointer %x>", gen->ptr);
+		fprintf(f, "<pointer %llx>", (unsigned long long)gen->ptr);
 	}
 }
 
