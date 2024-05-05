@@ -147,6 +147,13 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size) {
 		} else {
 			if(c == ' ' || c == '\n' || c == '\t') {
 				if(strlen(argbuf) > 0) {
+					if(strlen(argbuf) == 1 && argbuf[0] == '-') {
+						if(index_stack[br - 1] == 0) {
+							argbufmode = SN_TYPE_FUNCTION;
+						} else {
+							argbufmode = SN_TYPE_VARIABLE;
+						}
+					}
 					push_stack(gn_stack[br - 1], argbuf, argbufmode);
 					index_stack[br - 1]++;
 				}
