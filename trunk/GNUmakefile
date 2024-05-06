@@ -8,12 +8,11 @@ GREP = grep
 ifeq ($(shell uname -s),SunOS)
 GREP = ggrep
 CC = gcc
-EXTRA_LIBS = -ltermlib
 endif
 
 CFLAGS = -std=c99 -fPIC -g `./Tool/config cflags $(TARGET)`
 LDFLAGS =
-LIBS = `./Tool/config libs $(TARGET)` $(EXTRA_LIBS)
+LIBS = `./Tool/config libs $(TARGET)`
 EXTRA_OBJS = `./Tool/config objs $(TARGET)`
 SUFFIX =
 SUFFIX_SO = .so

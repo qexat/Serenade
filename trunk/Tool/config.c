@@ -25,9 +25,12 @@ int main(int argc, char** argv) {
 #endif
 #ifdef HAS_READLINE_SUPPORT
 		printf("-lreadline ");
+		if(strcmp(argv2, "SunOS") == 0) {
+			printf("-ltermlib ");
+		}
 #endif
 #if defined(HAS_FFI_SUPPORT) || defined(HAS_BINMODULE_SUPPORT)
-		if(strcmp(argv2, "NetBSD") != 0 && strcmp(argv2, "Windows") == 0) {
+		if(strcmp(argv2, "NetBSD") != 0 && strcmp(argv2, "Windows") != 0) {
 			printf("-ldl ");
 		}
 #endif
