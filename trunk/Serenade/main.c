@@ -213,6 +213,9 @@ int main(int argc, char** argv) {
 #endif
 		free(str);
 		sn_interpreter_free(sn);
+#ifndef HAS_READLINE_SUPPORT
+		printf("\n");
+#endif
 	}
 	return 0;
 #else
