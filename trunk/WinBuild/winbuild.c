@@ -50,7 +50,7 @@ int main(){
         fprintf(stderr, "Run me from the WinBuild directory\n");
         return 1;
     }
-    printf("WinBuild - Build script for MSVC %d\n", _MSC_FULL_VER);
+    printf("WinBuild - Serenade build script for MSVC %d\n", _MSC_FULL_VER);
     system("cl /nologo /Fe:..\\Tool\\configgen.exe ..\\Tool\\configgen.c");
     FILE* f = fopen("..\\config.h", "r");
     if(f != NULL){
