@@ -60,7 +60,8 @@ int main() {
 		system("..\\Tool\\configgen.exe ..\\config.h");
 	}
 	system("cl /nologo /Fe:..\\Tool\\config.exe ..\\Tool\\config.c");
-	system("..\\Tool\\config.exe reqobjs Windows >buildobjs");
+	system("echo main.o >buildobjs");
+	system("..\\Tool\\config.exe reqobjs Windows >>buildobjs");
 	system("..\\Tool\\config.exe objs Windows >>buildobjs");
 	f = fopen("buildobjs", "r");
 	if(f != NULL) {
