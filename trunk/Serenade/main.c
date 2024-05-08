@@ -50,6 +50,7 @@ extern bool is_repl;
 
 #ifdef HAS_REPL_SUPPORT
 int run_command(const char* cmd) {
+	printf("!%s\n", cmd);
 	if(strcmp(cmd, ":quit") == 0) {
 		return 1;
 	} else if(strcmp(cmd, ":version") == 0) {
@@ -128,7 +129,7 @@ int main(int argc, char** argv) {
 		sn_stdlib_init(sn);
 		sn_module_init(sn);
 		char cbuf[2];
-		cbuf[0] = '\n';
+		cbuf[0] = 0;
 		cbuf[1] = 0;
 		char* str = malloc(1);
 		str[0] = 0;
@@ -137,6 +138,9 @@ int main(int argc, char** argv) {
 		char* line = NULL;
 		using_history();
 		read_history(".serenade_history");
+#else
+		printf("> ");
+		fflush(stdout);
 #endif
 		while(1) {
 #ifdef HAS_READLINE_SUPPORT
@@ -203,7 +207,7 @@ int main(int argc, char** argv) {
 			}
 			if(cbuf[0] != '\r' && cbuf[0] != '\n') {
 				char* tmp = str;
-				str = sn_strcat3(tmp, cbuf, "\n");
+				str = sn_strcat(tmp, cbuf);
 				free(tmp);
 			}
 #endif
