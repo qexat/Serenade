@@ -187,6 +187,13 @@ struct sn_generic* _sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 					sn->local_variables = old_kv;
 				}
 				return r;
+			} else if(strcmp(op->name, "discard") == 0) {
+				r->type = SN_TYPE_VOID;
+				int i;
+				for(i = 1; gen->tree->args[i] != NULL; i++){
+					sn_generic_free(sn, _sn_run(sn, gen->tree->args[i]));
+				}
+				return r;
 			}
 			bool called = false;
 			int j;
@@ -272,5 +279,6 @@ int sn_run(struct sn_interpreter* sn, struct sn_generic* gen) {
 		sn_print_to(stdout, rgen);
 		printf("\n");
 	}
+	if(rgen->type == SN_TYPE_VOID) free(rgen);
 	return 0;
 }

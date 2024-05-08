@@ -123,6 +123,7 @@ struct sn_generic* sn_expr_parse(char* data, unsigned long long size) {
 			argbufmode = SN_TYPE_STRING;
 		} else if(c == '(') {
 			gn_stack[br] = malloc(sizeof(struct sn_generic));
+			gn_stack[br]->reference = false;
 			gn_stack[br]->type = SN_TYPE_TREE;
 			gn_stack[br]->tree = malloc(sizeof(struct sn_tree));
 			gn_stack[br]->tree->args = malloc(sizeof(struct sn_generic*));
@@ -316,7 +317,7 @@ void sn_tree_free(struct sn_interpreter* sn, struct sn_tree* t) {
 	if(t->args != NULL) {
 		int i;
 		for(i = 0; t->args[i] != NULL; i++) {
-			sn_generic_free(sn, t->args[i]);
+			if(!t->args[i]->reference) sn_generic_free(sn, t->args[i]);
 		}
 		free(t->args);
 	}

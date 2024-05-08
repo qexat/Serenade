@@ -293,6 +293,7 @@ do_again:
 }
 
 struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char* name, struct sn_generic* gen) {
+	if(gen != NULL) gen->reference = true;
 	int i;
 	bool replaced = false;
 	bool global = true;

@@ -50,6 +50,7 @@ struct sn_generic {
 	struct sn_tree* tree;
 	bool used;
 	void* argvalue;
+	bool reference;
 	struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**);
 };
 
