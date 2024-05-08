@@ -12,11 +12,16 @@ int main(int argc, char** argv) {
 	}
 	char* argv2 = argv[2] == NULL ? "" : argv[2];
 	if(strcmp(argv[1], "cflags") == 0) {
+#ifdef _MSC_VER
+#else
 		if(strcmp(argv2, "NetBSD") == 0) {
 			printf("-I/usr/pkg/include ");
 		}
+#endif
 		printf("\n");
 	} else if(strcmp(argv[1], "libs") == 0) {
+#ifdef _MSC_VER
+#else
 		if(strcmp(argv2, "NetBSD") == 0) {
 			printf("-L/usr/pkg/lib -Wl,-R/usr/pkg/lib ");
 		}
@@ -33,6 +38,7 @@ int main(int argc, char** argv) {
 		if(strcmp(argv2, "NetBSD") != 0 && strcmp(argv2, "Windows") != 0) {
 			printf("-ldl ");
 		}
+#endif
 #endif
 		printf("\n");
 	} else if(strcmp(argv[1], "reqobjs") == 0){

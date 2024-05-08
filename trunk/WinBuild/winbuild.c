@@ -50,7 +50,7 @@ int main(){
         fprintf(stderr, "Run me from the WinBuild directory\n");
         return 1;
     }
-    system("cl /Fe:..\\Tool\\configgen.exe ..\\Tool\\configgen.c");
+    system("cl /nologo /Fe:..\\Tool\\configgen.exe ..\\Tool\\configgen.c");
     FILE* f = fopen("..\\config.h", "r");
     if(f != NULL){
         printf("config.h already exists, remove it to generate it again.\n");
@@ -58,7 +58,7 @@ int main(){
     }else{
         system("..\\Tool\\configgen.exe ..\\config.h");
     }
-    system("cl /Fe:..\\Tool\\config.exe ..\\Tool\\config.c");
+    system("cl /nologo /Fe:..\\Tool\\config.exe ..\\Tool\\config.c");
     system("..\\Tool\\config.exe reqobjs Windows >buildobjs");
     system("..\\Tool\\config.exe objs Windows >>buildobjs");
     f = fopen("buildobjs", "r");
@@ -79,7 +79,7 @@ int main(){
                     objs = dynstrcat3(objstmp, " ", buf);
                     char* cfile = dynstrdup(buf);
                     cfile[strlen(cfile) - 1] = 'c';
-                    char* argtmp1 = dynstrcat("cl /c /D _AMD64_ /Fo:", buf);
+                    char* argtmp1 = dynstrcat("cl /nologo /c /D _AMD64_ /Fo:", buf);
                     char* argtmp2 = dynstrcat(argtmp1, " ");
                     char* arg = dynstrcat(argtmp2, cfile);
                     system(arg);
@@ -99,7 +99,7 @@ int main(){
         }
         free(buf);
 
-        char* cmd = dynstrcat("cl /Fe:serenade.exe ", objs);
+        char* cmd = dynstrcat("cl /nologo /Fe:serenade.exe ", objs);
         system(cmd);
         free(cmd);
 
