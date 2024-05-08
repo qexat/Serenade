@@ -50,7 +50,6 @@ extern bool is_repl;
 
 #ifdef HAS_REPL_SUPPORT
 int run_command(const char* cmd) {
-	printf("!%s\n", cmd);
 	if(strcmp(cmd, ":quit") == 0) {
 		return 1;
 	} else if(strcmp(cmd, ":version") == 0) {
