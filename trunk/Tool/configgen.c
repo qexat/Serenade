@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 		macro_print(out);
 		return 0;
 	}
-	char c;
+	char c = 0;
 	char oldc;
 	bool nl = false;
 	int n = 0;
