@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
 #endif
 		printf("\n");
 	} else if(strcmp(argv[1], "reqobjs") == 0){
-		printf("interpreter.o main.o parser.o run.o util.o\n");
+		printf("interpreter.o parser.o run.o util.o\n");
 	} else if(strcmp(argv[1], "objs") == 0) {
 #ifdef HAS_FFI_SUPPORT
 		printf("ffi_binding.o ");
