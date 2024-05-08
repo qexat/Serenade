@@ -357,6 +357,7 @@ struct sn_interpreter_kv* sn_set_variable(struct sn_interpreter* sn, const char*
 		sn->variables[i + 1] = NULL;
 		return sn->variables[i];
 	}
+	return NULL;
 }
 
 struct sn_interpreter_kv* sn_set_handler(struct sn_interpreter* sn, const char* name, struct sn_generic* (*handler)(struct sn_interpreter* sn, int, struct sn_generic**)) {
@@ -374,6 +375,7 @@ struct sn_interpreter_kv* sn_set_handler(struct sn_interpreter* sn, const char* 
 		set->handler = handler;
 		return set;
 	}
+	return NULL;
 }
 
 int sn_eval(struct sn_interpreter* sn, char* data, unsigned long long len) {

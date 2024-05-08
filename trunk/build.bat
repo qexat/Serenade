@@ -1,5 +1,6 @@
 @echo off
 REM $Id$
+REM THIS IS LEGACY SCRIPT; CONSIDER USING WinBuild\build.bat
 
 REM Change this as you want
 call "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat"

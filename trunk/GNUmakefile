@@ -14,6 +14,7 @@ CFLAGS = -std=c99 -fPIC -g `./Tool/config cflags $(TARGET)`
 LDFLAGS =
 LIBS = `./Tool/config libs $(TARGET)`
 EXTRA_OBJS = `./Tool/config objs $(TARGET)`
+OBJS = `./Tool/config reqobjs $(TARGET)`
 SUFFIX =
 SUFFIX_SO = .so
 PREFIX_SO = lib
@@ -35,7 +36,7 @@ all: ./Tool ./config.h ./Tool/config ./Serenade
 	$(MAKE) -C ./Tool CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)" config
 
 ./Serenade::
-	$(MAKE) -C ./Serenade CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)" EXTRA_OBJS="$(EXTRA_OBJS)" SUFFIX_SO="$(SUFFIX_SO)" PREFIX_SO="$(PREFIX_SO)"
+	$(MAKE) -C ./Serenade CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" LIBS="$(LIBS)" SUFFIX="$(SUFFIX)" EXTRA_OBJS="$(EXTRA_OBJS)" OBJS="$(OBJS)" SUFFIX_SO="$(SUFFIX_SO)" PREFIX_SO="$(PREFIX_SO)"
 
 clean:
 	$(MAKE) -C ./Tool clean
