@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
 		printf("\n");
 		printf("Support: %s\n", SUPPORT);
 #ifdef _MSC_VER
-		printf("Compiled in MSC %d\n", _MSC_FULL_VER);
+		printf("Compiled using MSC %d\n", _MSC_FULL_VER);
 #endif
 		printf("Parser stack size: %d\n", PARSER_STACK_SIZE);
 		printf("Callstack size: %d\n", CALLSTACK_SIZE);
